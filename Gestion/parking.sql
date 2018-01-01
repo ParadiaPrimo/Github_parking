@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  127.0.0.1
--- Généré le :  Lun 01 Janvier 2018 à 15:33
+-- Généré le :  Lun 01 Janvier 2018 à 15:43
 -- Version du serveur :  5.7.14
 -- Version de PHP :  5.6.25
 
@@ -87,6 +87,10 @@ CREATE TABLE `reservation` (
   `date_prevue_end` datetime NOT NULL,
   `date_true start` datetime DEFAULT NULL,
   `date_true_end` datetime DEFAULT NULL,
+  `lavage_ext` int(11) NOT NULL DEFAULT '0',
+  `lavage_int` int(11) NOT NULL DEFAULT '0',
+  `lavage_total` int(11) NOT NULL DEFAULT '0',
+  `essence` int(11) NOT NULL DEFAULT '0',
   `actif` int(11) NOT NULL DEFAULT '0',
   `fini` int(11) NOT NULL DEFAULT '0',
   `paye` int(11) NOT NULL DEFAULT '0'
@@ -96,8 +100,8 @@ CREATE TABLE `reservation` (
 -- Contenu de la table `reservation`
 --
 
-INSERT INTO `reservation` (`id_reservation`, `id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true start`, `date_true_end`, `actif`, `fini`, `paye`) VALUES
-(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-04 04:19:35', 1, 1, 0);
+INSERT INTO `reservation` (`id_reservation`, `id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true start`, `date_true_end`, `lavage_ext`, `lavage_int`, `lavage_total`, `essence`, `actif`, `fini`, `paye`) VALUES
+(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-04 04:19:35', 0, 0, 0, 0, 1, 1, 0);
 
 -- --------------------------------------------------------
 

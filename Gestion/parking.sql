@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  127.0.0.1
--- Généré le :  Sam 30 Décembre 2017 à 00:37
+-- Généré le :  Lun 01 Janvier 2018 à 15:33
 -- Version du serveur :  5.7.14
 -- Version de PHP :  5.6.25
 
@@ -85,9 +85,19 @@ CREATE TABLE `reservation` (
   `id_voiture` int(11) NOT NULL,
   `date_prevue_start` datetime NOT NULL,
   `date_prevue_end` datetime NOT NULL,
-  `date_true start` datetime NOT NULL,
-  `date_true_end` datetime NOT NULL
+  `date_true start` datetime DEFAULT NULL,
+  `date_true_end` datetime DEFAULT NULL,
+  `actif` int(11) NOT NULL DEFAULT '0',
+  `fini` int(11) NOT NULL DEFAULT '0',
+  `paye` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `reservation`
+--
+
+INSERT INTO `reservation` (`id_reservation`, `id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true start`, `date_true_end`, `actif`, `fini`, `paye`) VALUES
+(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-04 04:19:35', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -164,7 +174,7 @@ ALTER TABLE `proprietaire`
 -- AUTO_INCREMENT pour la table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT pour la table `voiture`
 --

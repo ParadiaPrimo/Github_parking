@@ -4,7 +4,9 @@ void client_cancel_reservation(MYSQL *mysql);
 void client_modify_reservation(MYSQL *mysql);
 void client_start_reservation(MYSQL *mysql);
 void client_end_reservation(MYSQL *mysql);
-
+void client_register_cb(MYSQL *mysql);
+void client_subscribe(MYSQL *mysql);
+void client_sing_in(MYSQL *mysql);
 
 
 
@@ -25,10 +27,9 @@ void client_add_car(MYSQL *mysql)
     exist = admin_already_exist(mysql,registration);
     if(!exist)
     {
-        /**demander s'il veut un abonnement**/
 
         /**ajouter le véhicule**/
-        sprintf(request,"INSERT INTO voiture (`id`, `plaque_immatriculation`, `abonnement`, `etat`) VALUES (NULL, '%s', '%d', '0')",registration,subscribe);
+        sprintf(request,"INSERT INTO voiture (`plaque_immatriculation`,`etat`) VALUES ('%s','0')",registration);
         mysql_query(mysql,request);
     }
 }
@@ -232,11 +233,113 @@ void client_end_reservation(MYSQL *mysql)
 			printf("Bill is printing...");
 			admin_facture(mysql,id_voiture);
 		else
-			printf("ERROR : The booking doesn't exist \n please contact an administrator");
+			printf("ERROR : The booking doesn't exist \n please contact an administrator\n");
 	}
 	else
 	{
-		printf("ERROR : The specified car doesn't exist")
+		printf("ERROR : The specified car doesn't exist\n")
 	}
+	
+}
+
+void client_register_cb(MYSQL *mysql)
+{
+	char request[150];
+	int id_proprio;
+	char cb_num[12];
+	char expi[10];
+	int exp_month;
+	int exp_year;
+	char crypto[3];
+	
+	/**recup les info**/
+	
+	/****/
+	sprintf(expi,"%s-%s-01",exp_year,_exp_month);
+	
+	/**Vérif duplication du code**/
+	sprintf(request,"SELECT * FROM cb WHERE code_bancaire = '%s'",cb_num);
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+	row = mysql_fetch_row(result);
+		
+	if(row == NULL)
+	{
+		sprintf(request,"INSERT INTO cb ('code_bancaire','crypto','date_expi') VALUES('%s','%s','%s') ",cb_num,crypto,expi);
+		mysql_query(mysql,request);
+		
+			
+		sprintf(request,"SELECT * FROM cb WHERE code_bancaire = '%s'",cb_num);
+		mysql_query(mysql,request);
+		result = mysql_use_result(mysql);
+		row = mysql_fetch_row(result);
+
+		if(row != NULL)
+			printf("Card successfully registered\n");
+		else
+			printf("ERROR : The card cannot be registered\n");
+	}
+	else
+	{
+		printf("ERROR : The card is already registered\n")
+	}
+}
+
+void client_subscribe(MYSQL *mysql)
+{
+	int option;	
+	char request[150];
+	int id_proprio;
+	
+	sprintf(request,"SELECT abonnement FROM proprietaire WHERE id_proprio = '%d'",id_proprio);
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+	row = mysql_fetch_row(result);
+
+	if(option > row[0] )
+	{
+		sprintf(request,"UPDATE proprietaire SET abonnement = '%d' WHERE id_proprio = '%d'",option,id_proprio);
+	mysql_query(mysql,request);
+	}
+	else
+	{
+		printf("ERROR : you have greater subscribe activated")
+	}	
+}
+
+void client_sing_in(MYSQL *mysql)
+{
+	char nom[50];
+	char prenom[50];
+	char mdp[50];
+	char mail[50]
+	
+	sprintf(request,"SELECT * FROM proprietaire WHERE  mail = '%s'",mail);
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+	row = mysql_fetch_row(result);
+
+	if(row == NULL)
+	{
+		sprintf(request,"INSERT INTO proprietaire ('nom','prenom','password','mail' ) VALUES ('%s','%s','%s','%s' )",nom,prenom,mdp,mail);
+		mysql_query(mysql,request);
+		
+		
+		sprintf(request,"SELECT * FROM proprietaire WHERE  mail = '%s'",mail);
+		mysql_query(mysql,request);
+		result = mysql_use_result(mysql);
+		row = mysql_fetch_row(result);
+		
+		if(row != NULL)
+			printf("Account successfully created\n");
+		else
+			printf("ERROR : The account cannot be created\n");
+		
+	}
+	else
+	{
+		printf("ERROR : The account already exist\n")
+	}
+	
 	
 }

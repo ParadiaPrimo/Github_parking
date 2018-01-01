@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  127.0.0.1
--- Généré le :  Lun 01 Janvier 2018 à 15:43
+-- Généré le :  Lun 01 Janvier 2018 à 23:17
 -- Version du serveur :  5.7.14
 -- Version de PHP :  5.6.25
 
@@ -28,6 +28,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `cb` (
   `id_cb` int(11) NOT NULL,
+  `id_proprio` int(11) NOT NULL,
   `code_bancaire` char(16) NOT NULL,
   `crypto` char(3) NOT NULL,
   `date_expi` date NOT NULL
@@ -37,8 +38,9 @@ CREATE TABLE `cb` (
 -- Contenu de la table `cb`
 --
 
-INSERT INTO `cb` (`id_cb`, `code_bancaire`, `crypto`, `date_expi`) VALUES
-(1, '1111222233334444', '222', '2019-06-25');
+INSERT INTO `cb` (`id_cb`, `id_proprio`, `code_bancaire`, `crypto`, `date_expi`) VALUES
+(1, 1, '1111222233334444', '222', '2019-06-25'),
+(2, 1, '1111254352526363', '123', '2019-03-01');
 
 -- --------------------------------------------------------
 
@@ -60,10 +62,10 @@ CREATE TABLE `facture` (
 
 CREATE TABLE `proprietaire` (
   `id_proprio` int(11) NOT NULL,
-  `id_cb` int(11) NOT NULL,
   `nom` varchar(50) NOT NULL,
   `prenom` varchar(80) NOT NULL,
-  `age` int(11) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `mail` varchar(50) NOT NULL,
   `abonnement` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -71,8 +73,8 @@ CREATE TABLE `proprietaire` (
 -- Contenu de la table `proprietaire`
 --
 
-INSERT INTO `proprietaire` (`id_proprio`, `id_cb`, `nom`, `prenom`, `age`, `abonnement`) VALUES
-(1, 1, 'Ky', 'Stéphane', 19, 2);
+INSERT INTO `proprietaire` (`id_proprio`, `nom`, `prenom`, `password`, `mail`, `abonnement`) VALUES
+(1, 'Ky', 'Stéphane', 'plop', 'sky050577@gmail.com', 2);
 
 -- --------------------------------------------------------
 
@@ -168,7 +170,7 @@ ALTER TABLE `voiture`
 -- AUTO_INCREMENT pour la table `cb`
 --
 ALTER TABLE `cb`
-  MODIFY `id_cb` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_cb` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT pour la table `proprietaire`
 --

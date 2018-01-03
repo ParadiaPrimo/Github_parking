@@ -3,9 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-struct GList table{
-
-};
+/*LES COMMENTAIRES SONT EN FRANCAIS POUR LE MOMENT*/
 void gtk_box_pack_start(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_box_pack_end(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 static void registrationForm(GtkContainer *vbox, GtkWidget *toolbar);
@@ -63,10 +61,10 @@ int main(int argc, char *argv[]) {
 
     gtk_box_pack_start(GTK_BOX(vbox), buttonArray, FALSE, FALSE, 0);
     button[0] = gtk_button_new_with_label("         Log in          ");
+    button[4] = gtk_button_new_with_label("          Sign in        ");
     button[1] = gtk_button_new_with_label("    Check our parking    ");
     button[2] = gtk_button_new_with_label("   Consult our offers    ");
-    button[3] = gtk_button_new_with_label("       Contact us        ");
-    button[4] = gtk_button_new_with_label(" Book your parking space ");
+    button[3] = gtk_button_new_with_label(" Book your parking space ");
 
     gtk_table_attach(GTK_TABLE(buttonArray), button[0], 3, 4, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     gtk_table_attach(GTK_TABLE(buttonArray), button[1], 3, 4, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
@@ -132,9 +130,4 @@ static void registrationForm(GtkContainer *vbox, GtkWidget *toolbar){
     formText[4] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(formArray), formName[4], 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
     gtk_table_attach(GTK_TABLE(formArray), formText[4], 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-}
-
-static void bookParking(){
-
-
 }

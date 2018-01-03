@@ -2480,3 +2480,9 @@
 	<string.h>
 	<stdio.h>
 
+1514575548 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\affichage des offres&abo\main.c
+	<gtk/gtk.h>
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+

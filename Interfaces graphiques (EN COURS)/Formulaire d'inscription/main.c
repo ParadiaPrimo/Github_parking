@@ -6,20 +6,20 @@
 void gtk_box_pack_start(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_box_pack_end(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_entry_set_visibility(GtkEntry *entry, gboolean visible);
-
+void buttonClicked(GtkWidget *widget, gpointer data);
+static void message_dialog_clicked (GtkButton *validButton, gpointer user_data, GtkWidget *window);
 int main(int argc, char *argv[]) {
 
     GtkWidget *window;
     GtkWidget *vbox;
-
-
+    int i;
     GtkWidget *toolbar;
     GtkToolItem *sep;
     GtkToolItem *exitTb;
     GtkToolItem *undo;
     GtkWidget *formArray;
-    GtkWidget *formName[5];
-    GtkWidget *formText[5];
+    GtkWidget *formName[4];
+    GtkEntry *formText[4] = {0};
 
     GtkWidget *validButton;
     GtkWidget *headerTitleLabel;
@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
 
     //CREATION OF THE MAIN WINDOW
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    //gtk_window_set_screen (GTK_WINDOW (window), gtk_widget_get_screen(window));
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
     gtk_window_set_title(GTK_WINDOW(window), "PARK'CAR");
@@ -73,6 +74,7 @@ int main(int argc, char *argv[]) {
     //NAME
     formName[0] = gtk_label_new("Name");
     formText[0] = gtk_entry_new();
+
     gtk_table_attach(GTK_TABLE(formArray), formName[0], 0, 1, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     gtk_table_attach(GTK_TABLE(formArray), formText[0], 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
@@ -81,11 +83,13 @@ int main(int argc, char *argv[]) {
     formText[1] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(formArray), formName[1], 0, 1, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     gtk_table_attach(GTK_TABLE(formArray), formText[1], 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    //LICENSE PLATE
-    formName[2] = gtk_label_new("License Plate");
+
+    //MAIL
+    formName[2] = gtk_label_new("E-mail");
     formText[2] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(formArray), formName[2], 0, 1, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     gtk_table_attach(GTK_TABLE(formArray), formText[2], 1, 2, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+
     //PASSWORD
     formName[3] = gtk_label_new("Password");
     formText[3] = gtk_entry_new();
@@ -104,10 +108,37 @@ int main(int argc, char *argv[]) {
     validButton = gtk_button_new_with_label("Create my account");
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
+    for(i = 0; i < 5; i++){
+        g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked), formText[i]);
+    }
+    g_signal_connect (validButton, "clicked", G_CALLBACK (message_dialog_clicked), NULL);
     //DISPLAY THE WINDOW
     gtk_widget_show_all(window);
 
     gtk_main();
 
   return 0;
+}
+
+void buttonClicked(GtkWidget *widget, gpointer data){
+
+    char *text;
+    text = gtk_entry_get_text(GTK_ENTRY(data));
+    printf("\n%s", text);
+
+}
+static void
+message_dialog_clicked (GtkButton *validButton, gpointer user_data, GtkWidget *window)
+{
+  GtkWidget *dialog;
+
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW (window),
+                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                   GTK_MESSAGE_INFO,
+                                   GTK_BUTTONS_OK,
+                                   "You have to fill out all entries to create your account");
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy (dialog);
+
 }

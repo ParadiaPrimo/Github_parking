@@ -10,9 +10,10 @@ void buttonClicked(GtkWidget *widget, gpointer data);
 static void message_dialog_clicked (GtkButton *validButton, gpointer user_data, GtkWidget *window);
 int main(int argc, char *argv[]) {
 
+    int i = 0;
     GtkWidget *window;
     GtkWidget *vbox;
-    int i;
+
     GtkWidget *toolbar;
     GtkToolItem *sep;
     GtkToolItem *exitTb;
@@ -38,16 +39,16 @@ int main(int argc, char *argv[]) {
 
     //CREATION OF THE MAIN WINDOW
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    //gtk_window_set_screen (GTK_WINDOW (window), gtk_widget_get_screen(window));
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
     gtk_window_set_title(GTK_WINDOW(window), "PARK'CAR");
     gtk_widget_modify_bg(window, GTK_STATE_NORMAL, &color);
 
+    //THE MAIN BOX
     vbox = gtk_vbox_new(FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(window), vbox);
-
+    //TOOL BAR MENU
     toolbar = gtk_toolbar_new();
     gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_ICONS);
 
@@ -109,9 +110,10 @@ int main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     for(i = 0; i < 5; i++){
-        g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked), formText[i]);
+        g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked), formText[i]); //CALL: buttonClicked
+
     }
-    g_signal_connect (validButton, "clicked", G_CALLBACK (message_dialog_clicked), NULL);
+
     //DISPLAY THE WINDOW
     gtk_widget_show_all(window);
 
@@ -119,26 +121,11 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
+/** AU CLIC DU BOUTTON, ON RECUPERE LES DONNEES SAISIES **/
 void buttonClicked(GtkWidget *widget, gpointer data){
 
-    char *text;
-    text = gtk_entry_get_text(GTK_ENTRY(data));
-    printf("\n%s", text);
-
-}
-static void
-message_dialog_clicked (GtkButton *validButton, gpointer user_data, GtkWidget *window)
-{
-  GtkWidget *dialog;
-
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW (window),
-                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                   GTK_MESSAGE_INFO,
-                                   GTK_BUTTONS_OK,
-                                   "You have to fill out all entries to create your account");
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
+    char *value;
+    value = gtk_entry_get_text(GTK_ENTRY(data));
+    printf("%s\n", value);
 
 }

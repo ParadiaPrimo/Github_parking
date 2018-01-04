@@ -7,12 +7,13 @@
 void gtk_box_pack_start(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_box_pack_end(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 static void registrationForm(GtkContainer *vbox, GtkWidget *toolbar);
-void gtk_container_empty(GtkContainer *vbox);
+static void createWindow(GtkWidget *button, gpointer data);
 
 int main(int argc, char *argv[]) {
 
     GtkWidget *window;
     GtkContainer *vbox;
+    GtkContainer *box;
     GtkWidget *hbox;
 
     GtkWidget *toolbar;
@@ -21,6 +22,16 @@ int main(int argc, char *argv[]) {
     GtkWidget *buttonArray;
     GtkWidget *buttonLabel;
     GtkWidget *button[5];
+
+    GtkWidget *headerTitleLabel;
+    gchar *headerTitle;
+    GtkWidget *textLabel;
+    gchar *text;
+
+    GtkWidget *frame;
+    GtkWidget *vBoxFrame;
+    GtkWidget *boxButtons;
+    GtkWidget *scrollbar;
 
     //INITIALIZATION OF GTK
     gtk_init(&argc, &argv);
@@ -35,13 +46,18 @@ int main(int argc, char *argv[]) {
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
+    gtk_container_set_border_width(GTK_CONTAINER(window), 30);
     gtk_window_set_title(GTK_WINDOW(window), "PARK'CAR");
     gtk_widget_modify_bg(window, GTK_STATE_NORMAL, &color);
 
+    //SCROLLBAR
+    scrollbar = gtk_scrolled_window_new(NULL, NULL);
+    gtk_container_add(GTK_CONTAINER(window),scrollbar);
     vbox = gtk_vbox_new(FALSE, 0);
-    hbox = gtk_hbox_new(FALSE, 0);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrollbar), vbox);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollbar), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+
     gtk_container_add(GTK_CONTAINER(window), vbox);
-    gtk_container_add(GTK_CONTAINER(window), hbox);
 
     toolbar = gtk_toolbar_new();
     gtk_toolbar_set_style(GTK_TOOLBAR(toolbar), GTK_TOOLBAR_ICONS);
@@ -55,24 +71,48 @@ int main(int argc, char *argv[]) {
     g_signal_connect(G_OBJECT(exitTb), "clicked", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    buttonArray = gtk_table_new(4, 1, TRUE);
+    headerTitle = g_locale_from_utf8("\n\n<b><big>Welcome to PARK'CAR</big></b>\n\n", -1, NULL, NULL, NULL);
+    headerTitleLabel = gtk_label_new(headerTitle);
+    g_free(headerTitle);
+    gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
+    gtk_label_set_justify(GTK_LABEL(headerTitleLabel), GTK_JUSTIFY_CENTER);
+    gtk_box_pack_start(GTK_BOX(vbox), headerTitleLabel, FALSE, FALSE, 0);
+
+    frame = gtk_frame_new("Discover the PARK'CAR service");
+    gtk_box_pack_start(GTK_BOX(vbox), frame, FALSE, FALSE, 5);
+    vBoxFrame = gtk_vbox_new(TRUE, 5);
+    gtk_container_add(GTK_CONTAINER(frame), vBoxFrame);
+    textLabel = gtk_label_new("With PARK'CAR, you can book a car space!\nYou can modify or cancel your oder until your scheduled day of entry.\nPay for your parking online.\n");
+    gtk_box_pack_start(GTK_BOX(vBoxFrame), textLabel, FALSE, FALSE, 10);
+
+    buttonArray = gtk_table_new(4, 4, TRUE);
     buttonLabel = gtk_label_new(buttonArray);
-    gtk_label_set_justify(GTK_LABEL(buttonLabel), GTK_JUSTIFY_CENTER);
+    /*boxButtons = gtk_vbox_new(TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(boxButtons), vbox, FALSE, FALSE, 5);
+    gtk_container_add(GTK_CONTAINER(box), boxButtons);printf("ok");
+    gtk_container_set_border_width(GTK_CONTAINER(box), 50);*/
+    gtk_box_pack_start(GTK_BOX(vbox), buttonArray, FALSE, FALSE, 20);
 
-    gtk_box_pack_start(GTK_BOX(vbox), buttonArray, FALSE, FALSE, 0);
     button[0] = gtk_button_new_with_label("         Log in          ");
-    button[4] = gtk_button_new_with_label("          Sign in        ");
-    button[1] = gtk_button_new_with_label("    Check our parking    ");
-    button[2] = gtk_button_new_with_label("   Consult our offers    ");
-    button[3] = gtk_button_new_with_label(" Book your parking space ");
+    button[1] = gtk_button_new_with_label("          Sign in        ");
+    button[2] = gtk_button_new_with_label("    Check our parking    ");
+    button[3] = gtk_button_new_with_label("   Consult our offers    ");
+    button[4] = gtk_button_new_with_label(" Book your parking space ");
 
-    gtk_table_attach(GTK_TABLE(buttonArray), button[0], 3, 4, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(buttonArray), button[1], 3, 4, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(buttonArray), button[2], 3, 4, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(buttonArray), button[3], 3, 4, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(buttonArray), button[4], 3, 4, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    /*gtk_box_pack_start(GTK_BOX(boxButtons), button[0], FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(boxButtons), button[1], FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(boxButtons), button[2], FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(boxButtons), button[3], FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(boxButtons), button[4], FALSE, FALSE, 0);*/
 
-    g_signal_connect(G_OBJECT(button[0]), "clicked", G_CALLBACK(registrationForm), NULL);
+    gtk_table_attach(GTK_TABLE(buttonArray), button[0], 3, 4, 1, 2, !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(buttonArray), button[1], 4, 5, 1, 2, !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(buttonArray), button[2], 3, 4, 2, 3, !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(buttonArray), button[3], 3, 4, 3, 4, !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(buttonArray), button[4], 3, 4, 4, 5, !GTK_FILL, !GTK_EXPAND, 0, 10);
+
+    g_signal_connect(button[0], "clicked", G_CALLBACK(createWindow), NULL);
+
 
     //DISPLAY THE WINDOW
     gtk_widget_show_all(window);
@@ -81,53 +121,13 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-void gtk_container_empty(GtkContainer *vbox){
-    GList * children = gtk_container_get_children(vbox);
-    while(children){
-        gtk_widget_destroy(children->data);
-        children = g_list_next(children);
-    }
-    g_list_free(children);
-}
-static void registrationForm(GtkContainer *vbox, GtkWidget *toolbar){
-    int i;
-    GtkWidget *formArray;
-    GtkWidget *formName[5];
-    GtkWidget *formText[5];
-    GtkWidget *undo;
+static void createWindow(GtkWidget *button, gpointer data){
+    GtkWidget *window;
+    GtkWidget *label;
 
-
-    gtk_container_empty(GTK_CONTAINER(vbox));
-
-    undo = gtk_tool_button_new_from_stock(GTK_STOCK_UNDO);
-    gtk_toolbar_insert(GTK_TOOLBAR(toolbar), undo, 0);
-
-    formArray = gtk_table_new(5, 2, TRUE);
-
-    //NAME
-    formName[0] = gtk_label_new("Name");
-    formText[0] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[0], 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(formArray), formText[0], 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    printf("ok");
-    //SURNAME
-    formName[1] = gtk_label_new("Surname");
-    formText[1] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[1], 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(formArray), formText[1], 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    //ADDRESS
-    formName[2] = gtk_label_new("Address");
-    formText[2] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[2], 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(formArray), formText[2], 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    //PASSWORD
-    formName[3] = gtk_label_new("Password");
-    formText[3] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[3], 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(formArray), formText[3], 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    //PASSWORD 2
-    formName[4] = gtk_label_new("Confirm your password");
-    formText[4] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[4], 0, 1, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
-    gtk_table_attach(GTK_TABLE(formArray), formText[4], 1, 2, 0, 1, GTK_EXPAND | GTK_FILL, GTK_EXPAND, 0, 0);
+    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    label = gtk_label_new ("Hello GNOME!");
+    gtk_container_add (GTK_CONTAINER (window), label);
+    gtk_window_set_default_size (GTK_WINDOW (window), 200, 100);
+    gtk_widget_show_all (window);
 }

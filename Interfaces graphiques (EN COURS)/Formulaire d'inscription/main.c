@@ -6,15 +6,19 @@
 void gtk_box_pack_start(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_box_pack_end(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_entry_set_visibility(GtkEntry *entry, gboolean visible);
-void buttonClicked_Name(GtkWidget *widget, gpointer data);
-void buttonClicked_Surname(GtkWidget *widget, gpointer data);
-void buttonClicked_Email(GtkWidget *widget, gpointer data);
-void buttonClicked_Password(GtkWidget *widget, gpointer data);
-void buttonClicked_Password2(GtkWidget *widget, gpointer data);
+
+void grabAll(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2);
 //static void message_dialog_clicked (GtkButton *validButton, gpointer user_data, GtkWidget *window);
 int main(int argc, char *argv[]) {
 
     int i = 0;
+    int cnt = 0;
+    char *name;
+    char *surname;
+    char *email;
+    char *password;
+    char *password2;
+    char array[4];
     GtkWidget *window;
     GtkWidget *vbox;
 
@@ -112,12 +116,10 @@ int main(int argc, char *argv[]) {
 
     validButton = gtk_button_new_with_label("Create my account");
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+
     //CALL FUNCTIONS: buttonClicked
-    g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked_Name), formText[0]);
-    g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked_Surname), formText[1]);
-    g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked_Email), formText[2]);
-    g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked_Password), formText[3]);
-    g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked_Password2), formText[4]);
+
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabAll), &formText);
 
     //DISPLAY THE WINDOW
     gtk_widget_show_all(window);
@@ -127,42 +129,20 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 /** AU CLIC DU BOUTTON, ON RECUPERE LES DONNEES SAISIES **/
-void buttonClicked_Name(GtkWidget *widget, gpointer data){
 
-    char *name;
-    name = gtk_entry_get_text(GTK_ENTRY(data));
+void grabAll(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2){
+
+    GtkWidget **value = data;
+    name = gtk_entry_get_text(GTK_ENTRY(value[0]));
     printf("Name: %s\n", name);
-
-}
-void buttonClicked_Surname(GtkWidget *widget, gpointer data){
-
-    char *surname;
-    surname = gtk_entry_get_text(GTK_ENTRY(data));
+    surname = gtk_entry_get_text(GTK_ENTRY(value[1]));
     printf("Surname: %s\n", surname);
-
-}
-
-void buttonClicked_Email(GtkWidget *widget, gpointer data){
-
-    char *email;
-    email = gtk_entry_get_text(GTK_ENTRY(data));
+    email = gtk_entry_get_text(GTK_ENTRY(value[2]));
     printf("Email: %s\n", email);
-
-}
-
-void buttonClicked_Password(GtkWidget *widget, gpointer data){
-
-    char *password;
-    password = gtk_entry_get_text(GTK_ENTRY(data));
-    printf("Password2: %s\n", password);
-
-}
-
-void buttonClicked_Password2(GtkWidget *widget, gpointer data){
-
-    char *password2;
-    password2 = gtk_entry_get_text(GTK_ENTRY(data));
+    password = gtk_entry_get_text(GTK_ENTRY(value[3]));
+    printf("Password: %s\n", password);
+    password2 = gtk_entry_get_text(GTK_ENTRY(value[4]));
     printf("Password2: %s\n", password2);
 
-}
 
+}

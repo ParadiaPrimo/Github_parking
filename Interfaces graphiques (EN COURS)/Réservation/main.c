@@ -7,9 +7,9 @@ static void fill_combo_entry_month(GtkWidget *combo);
 void gtk_box_pack_start(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_box_pack_end(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_entry_set_visibility(GtkEntry *entry, gboolean visible);
-void buttonClicked(GtkWidget *widget, gpointer data);
+char getValue(GtkWidget *widget, gpointer data, char *carRegistration);
 //COLLECT SPIN'S VALUE
-static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2);
+static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2, char *carRegistration);
 int main(int argc, char *argv[]) {
 
     int i = 0;
@@ -290,7 +290,9 @@ int main(int argc, char *argv[]) {
     validButton = gtk_button_new_with_label("Book my parking space");
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     //g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked), combo);
+    g_signal_connect(validButton, "clicked", G_CALLBACK(getValue), formText);
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabAll), &spinner);
+
 
 
     //DISPLAY THE WINDOW
@@ -316,15 +318,13 @@ int main(int argc, char *argv[]) {
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT (combo), "always", "December");
 
 }*/
-void buttonClicked(GtkWidget *widget, gpointer data){
-
+char getValue(GtkWidget *widget, gpointer data, char *carRegistration){
     //CAR REGISTRATION
-    char *carRegistration;
     carRegistration = gtk_entry_get_text(GTK_ENTRY(data));
-    printf("\n%s", carRegistration);
+    return carRegistration;
 
 }
-static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2){
+static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2, char *carRegistration){
 
     GtkSpinButton **value = data;
     /** FROM **/
@@ -341,7 +341,7 @@ static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int
     hour2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[8]));
     minute2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[9]));
 
-    printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", day2, month2, year2, hour2, minute2);
-
+    carRegistration = getValue(spinner, data, carRegistration);
+    printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d\nCar: %s", day2, month2, year2, hour2, minute2, carRegistration);
 
 }

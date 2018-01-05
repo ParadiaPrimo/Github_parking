@@ -11,14 +11,7 @@ void grabAll(GtkWidget *widget, gpointer data, char *name, char *surname, char *
 //static void message_dialog_clicked (GtkButton *validButton, gpointer user_data, GtkWidget *window);
 int main(int argc, char *argv[]) {
 
-    int i = 0;
-    int cnt = 0;
-    char *name;
-    char *surname;
-    char *email;
-    char *password;
-    char *password2;
-    char array[4];
+
     GtkWidget *window;
     GtkWidget *vbox;
 
@@ -118,7 +111,6 @@ int main(int argc, char *argv[]) {
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     //CALL FUNCTIONS: buttonClicked
-
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabAll), &formText);
 
     //DISPLAY THE WINDOW
@@ -129,7 +121,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 /** AU CLIC DU BOUTTON, ON RECUPERE LES DONNEES SAISIES **/
-
 void grabAll(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2){
 
     GtkWidget **value = data;
@@ -143,6 +134,5 @@ void grabAll(GtkWidget *widget, gpointer data, char *name, char *surname, char *
     printf("Password: %s\n", password);
     password2 = gtk_entry_get_text(GTK_ENTRY(value[4]));
     printf("Password2: %s\n", password2);
-
 
 }

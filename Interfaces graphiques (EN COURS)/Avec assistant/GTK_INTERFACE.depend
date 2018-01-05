@@ -1,6 +1,9 @@
 # depslib dependency file v1.0
-1514390538 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\gtk_interface\main.c
+1514545903 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\gtk_interface\main.c
 	<gtk/gtk.h>
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
 
 1379764518 c:\gtk\include\gtk-3.0\gtk\gtk.h
 	<gdk/gdk.h>
@@ -2468,25 +2471,13 @@
 1379764516 c:\gtk\include\gtk-3.0\gtk\deprecated\gtkvseparator.h
 	<gtk/gtkseparator.h>
 
-1514413780 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\gtk_interface - copie\main.c
+1515077626 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\menu principal\main.c
 	<gtk/gtk.h>
 	<stdlib.h>
 	<string.h>
 	<stdio.h>
 
-1514514215 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\gtk_interface - display offers\main.c
-	<gtk/gtk.h>
-	<stdlib.h>
-	<string.h>
-	<stdio.h>
-
-1514575548 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\affichage des offres&abo\main.c
-	<gtk/gtk.h>
-	<stdlib.h>
-	<string.h>
-	<stdio.h>
-
-1515104037 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\réservation\main.c
+1515121884 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\avec assistant\main.c
 	<gtk/gtk.h>
 	<stdlib.h>
 	<string.h>

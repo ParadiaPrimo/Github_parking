@@ -7,13 +7,9 @@ static void fill_combo_entry_month(GtkWidget *combo);
 void gtk_box_pack_start(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_box_pack_end(GtkBox* box, GtkWidget* child, gboolean expand, gboolean fill, guint padding);
 void gtk_entry_set_visibility(GtkEntry *entry, gboolean visible);
-void buttonClicked(GtkComboBox *widget, gpointer data);
+void buttonClicked(GtkWidget *widget, gpointer data);
 //COLLECT SPIN'S VALUE
-static void grabDay (GtkWidget *spinner, gpointer data);
-static void grabMonth(GtkWidget *spinner, gpointer data);
-static void grabYear(GtkWidget *spinner, gpointer data);
-static void grabHour(GtkWidget *spinner, gpointer data);
-static void grabMinute(GtkWidget *spinner, gpointer data);
+static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2);
 int main(int argc, char *argv[]) {
 
     int i = 0;
@@ -29,6 +25,7 @@ int main(int argc, char *argv[]) {
     GtkToolItem *sep;
     GtkToolItem *exitTb;
     GtkToolItem *undo;
+
     GtkWidget *formArray;
     GtkWidget *formName;
     GtkWidget *formText;
@@ -45,7 +42,7 @@ int main(int argc, char *argv[]) {
     GtkWidget *vBoxFrame;
 
     GtkWidget *box, *combo;
-    GtkWidget *spinner[10];
+    GtkWidget *spinner[9];
     GtkAdjustment *adj;
 
 
@@ -124,7 +121,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 1.0, 31.0, 1.0, 5.0, 0.0);
         spinner[0] = gtk_spin_button_new(adj, 1.0, 0);
-        g_signal_connect(spinner[0], "value-changed", G_CALLBACK(grabDay), NULL);
+        //g_signal_connect(spinner[0], "value-changed", G_CALLBACK(grabDay), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[0]), TRUE);
         gtk_box_pack_start (GTK_BOX (vbox3), spinner[0], FALSE, TRUE, 10);
 
@@ -138,7 +135,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 1.0, 12.0, 1.0, 5.0, 0.0);
         spinner[1] = gtk_spin_button_new(adj, 0, 0);
-        g_signal_connect(spinner[1], "value-changed", G_CALLBACK(grabMonth), NULL);
+        //g_signal_connect(spinner[1], "value-changed", G_CALLBACK(grabMonth), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[1]), TRUE);
         gtk_box_pack_start (GTK_BOX (vbox3), spinner[1], FALSE, TRUE, 10);
 
@@ -167,7 +164,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 2018.0, 2030.0, 1.0, 5.0, 0.0);
         spinner[2] = gtk_spin_button_new(adj, 0, 0);
-        g_signal_connect(spinner[2], "value-changed", G_CALLBACK(grabYear), NULL);
+        //g_signal_connect(spinner[2], "value-changed", G_CALLBACK(grabYear), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[2]), FALSE);
         //gtk_widget_set_size_request (spinner, 55, -1);
         gtk_box_pack_start (GTK_BOX (vbox3), spinner[2], FALSE, TRUE, 10);
@@ -183,7 +180,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(0.0, 0.0, 23.0, 1.0, 5.0, 0.0);
         spinner[3] = gtk_spin_button_new(adj, 0, 0);
-        g_signal_connect(spinner[3], "value-changed", G_CALLBACK(grabHour), NULL);
+        //g_signal_connect(spinner[3], "value-changed", G_CALLBACK(grabHour), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[3]), TRUE);
         gtk_box_pack_start(GTK_BOX (vbox3), spinner[3], FALSE, TRUE, 10);
 
@@ -197,7 +194,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(0.0, 0.0, 59.0, 1.0, 5.0, 0.0);
         spinner[4] = gtk_spin_button_new(adj, 0, 0);
-        g_signal_connect(spinner[4], "value-changed", G_CALLBACK(grabMinute), NULL);
+        //g_signal_connect(spinner[4], "value-changed", G_CALLBACK(grabMinute), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[4]), TRUE);
         gtk_box_pack_start(GTK_BOX (vbox3), spinner[4], FALSE, TRUE, 10);
 
@@ -223,7 +220,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 1.0, 31.0, 1.0, 5.0, 0.0);
         spinner[5] = gtk_spin_button_new(adj, 0, 0);
-        g_signal_connect(spinner[5], "value-changed", G_CALLBACK(grabDay), NULL);
+        //g_signal_connect(spinner[5], "value-changed", G_CALLBACK(grabDay), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[5]), TRUE);
         gtk_box_pack_start (GTK_BOX (vbox3), spinner[5], FALSE, TRUE, 10);
 
@@ -237,7 +234,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 1.0, 12.0, 1.0, 5.0, 0.0);
         spinner[6] = gtk_spin_button_new(adj, 1.0, 0);
-        g_signal_connect(spinner[6], "value-changed", G_CALLBACK(grabDay), NULL);
+        //g_signal_connect(spinner[6], "value-changed", G_CALLBACK(grabDay), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[6]), TRUE);
         gtk_box_pack_start (GTK_BOX (vbox3), spinner[6], FALSE, TRUE, 10);
 
@@ -251,7 +248,7 @@ int main(int argc, char *argv[]) {
 
         adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 2018.0, 2030.0, 1.0, 5.0, 0.0);
         spinner[7] = gtk_spin_button_new(adj, 0, 0);
-        g_signal_connect(spinner[7], "value-changed", G_CALLBACK(grabDay), NULL);
+        //g_signal_connect(spinner[7], "value-changed", G_CALLBACK(grabDay), NULL);
         gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[7]), FALSE);
         gtk_box_pack_start (GTK_BOX (vbox3), spinner[7], FALSE, TRUE, 10);
         vbox3 = gtk_vbox_new (FALSE, 0);
@@ -263,9 +260,9 @@ int main(int argc, char *argv[]) {
         gtk_box_pack_start (GTK_BOX (vbox3), textLabel, FALSE, FALSE, 10);
 
         adj = (GtkAdjustment *)gtk_adjustment_new(0.0, 0.0, 23.0, 1.0, 5.0, 0.0);
-        spinner[3] = gtk_spin_button_new(adj, 0, 0);
-        gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[3]), TRUE);
-        gtk_box_pack_start(GTK_BOX (vbox3), spinner[3], FALSE, TRUE, 10);
+        spinner[8] = gtk_spin_button_new(adj, 0, 0);
+        gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[8]), TRUE);
+        gtk_box_pack_start(GTK_BOX (vbox3), spinner[8], FALSE, TRUE, 10);
 
         vbox3 = gtk_vbox_new(FALSE, 0);
         gtk_box_pack_start (GTK_BOX(hbox), vbox3, FALSE, FALSE, 10);
@@ -276,9 +273,9 @@ int main(int argc, char *argv[]) {
         gtk_box_pack_start (GTK_BOX (vbox3), textLabel, FALSE, FALSE, 10);
 
         adj = (GtkAdjustment *)gtk_adjustment_new(0.0, 0.0, 59.0, 1.0, 5.0, 0.0);
-        spinner[4] = gtk_spin_button_new(adj, 0, 0);
-        gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[4]), TRUE);
-        gtk_box_pack_start(GTK_BOX (vbox3), spinner[4], FALSE, TRUE, 10);
+        spinner[9] = gtk_spin_button_new(adj, 0, 0);
+        gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[9]), TRUE);
+        gtk_box_pack_start(GTK_BOX (vbox3), spinner[9], FALSE, TRUE, 10);
 
 
     formArray = gtk_table_new(5, 2, TRUE);
@@ -293,8 +290,8 @@ int main(int argc, char *argv[]) {
     validButton = gtk_button_new_with_label("Book my parking space");
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     //g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked), combo);
-    g_signal_connect(validButton, "clicked", G_CALLBACK(buttonClicked), formText);
-    //g_signal_connect(validButton, "clicked", G_CALLBACK(grab_int_value), spinner[0]);
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabAll), &spinner);
+
 
     //DISPLAY THE WINDOW
     gtk_widget_show_all(window);
@@ -319,10 +316,7 @@ int main(int argc, char *argv[]) {
     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT (combo), "always", "December");
 
 }*/
-void buttonClicked(GtkComboBox *widget, gpointer data){
-    //COLLECT ALL SPINS VALUES
-
-
+void buttonClicked(GtkWidget *widget, gpointer data){
 
     //CAR REGISTRATION
     char *carRegistration;
@@ -330,38 +324,24 @@ void buttonClicked(GtkComboBox *widget, gpointer data){
     printf("\n%s", carRegistration);
 
 }
-static void grabDay(GtkWidget *spinner, gpointer data){
+static void grabAll(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2){
 
-    int *day;
-    day = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner));
-    printf("%d", day);
+    GtkSpinButton **value = data;
+    /** FROM **/
+    day = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0]));
+    month = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[1]));
+    year = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[2]));
+    hour = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[3]));
+    minute = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[4]));
+    printf("\nFROM:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", day, month, year, hour, minute);
+    /** TO **/
+    day2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[5]));
+    month2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[6]));
+    year2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[7]));
+    hour2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[8]));
+    minute2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[9]));
 
-}
-static void grabMonth(GtkWidget *spinner, gpointer data){
+    printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", day2, month2, year2, hour2, minute2);
 
-    int *month;
-    month = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner));
-    printf("%d", month);
-
-}
-static void grabYear(GtkWidget *spinner, gpointer data){
-
-    int *year;
-    year = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner));
-    printf("%d", year);
-
-}
-static void grabHour(GtkWidget *spinner, gpointer data){
-
-    int *hour;
-    hour = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner));
-    printf("%d", hour);
-
-}
-static void grabMinute(GtkWidget *spinner, gpointer data){
-
-    int *minute;
-    minute = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinner));
-    printf("%d", minute);
 
 }

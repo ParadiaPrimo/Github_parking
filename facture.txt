@@ -1,0 +1,26 @@
+Bill ID : 1
+Car numberplate : BATMOBILE!
+
+		========================================
+		======		Park'Car	  ======
+		========================================
+
+Customer name : Ky  Stephane
+Bank account : XXXX-XXXX-XXXX-4444
+
+
+Booking detail :
+	From : 2017-12-31 00:00:00			to : 2018-01-02 00:00:00
+
+Realtime booking :
+	From : 2018-01-01 05:00:00			to : 2018-01-02 04:19:35
+
+Cleaning : 0
+
+Fuel : 11.20
+
+Parking : 23.19
+
+Penality : 5
+
+Total : 39.39ÿ

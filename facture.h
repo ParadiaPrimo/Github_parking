@@ -34,7 +34,7 @@ typedef struct Bonus_price
 
 } Bonus_price;
 
-void facture_check(MYSQL *mysql)
+void facture_check(MYSQL *mysql,char plate)
 {
     Info user;
     Date booking;
@@ -54,7 +54,7 @@ void facture_check(MYSQL *mysql)
     MYSQL_ROW row;
 
     char request[150];
-    strcpy(user.plate,"BATMOBILE!");
+    strcpy(user.plate,plate);
 
     /**Récupération de toute les info de l'utilisateur**/
     sprintf(request,"SELECT id_voiture,id_proprio FROM voiture WHERE plaque_immatriculation='%s' AND etat = 1",user.plate);
@@ -121,7 +121,7 @@ void facture_check(MYSQL *mysql)
                                     booking.real_final_date[5],booking.real_final_date[6],booking.real_final_date[8],booking.real_final_date[9]);
     date_real_two = atol(tempo);
 
-    if((date_real_one<date_one)||(date_real_two>date_two))
+    if((date_real_one<date_one)||(date_real_two>date_two)||(date_real_one>date_one)||(date_real_two<date_two))
     {
         if(user.subscribe == 0)
         {
@@ -220,18 +220,117 @@ void facture_check(MYSQL *mysql)
         price.fuel *= 0.7;
     }
 
-    /**
-    clean in OK
-    clean out OK
-    clean both OK
-    fuel OK
-    hour OK
-    penality OK
-    **/
-
     mysql_free_result(result);
 
+    FILE* bill_base = fopen("facture_base.txt","r");
+    FILE* bill_final = fopen("facture.txt","w");
+    char caractereActuel;
+    char plop[150];
 
+    int a = 0;
+    int b = 0;
+    int c = 0;
+
+    if(bill_base != NULL)
+    {
+            do
+            {
+
+            caractereActuel = fgetc(bill_base);
+            printf("%c",caractereActuel);
+            if(caractereActuel =='%')
+            {
+                switch(a)
+                {
+                case 0:
+                    sprintf(plop,"%d",user.id_booking);
+                    fputs(plop,bill_final);
+                    break;
+                case 1:
+                    fputs(user.plate,bill_final);
+                    break;
+                case 2:
+                    fputs(user.name,bill_final);
+                    break;
+                case 3:
+                    fputs(user.surname,bill_final);
+                    break;
+                case 4:
+                    sprintf(tempo2,"%c%c%c%c",user.bank[12],user.bank[13],user.bank[14],user.bank[15]);
+                    fputs(tempo2,bill_final);
+                    break;
+                default:
+                    break;
+                }
+
+                a++;
+            }
+            else if(caractereActuel =='*')
+            {
+
+                switch(b)
+                {
+                case 0:
+                    fputs(booking.initial_date,bill_final);
+                    break;
+                case 1:
+                    fputs(booking.final_date,bill_final);
+                    break;
+                case 2:
+                    fputs(booking.real_initial_date,bill_final);
+                    break;
+                case 3:
+                    fputs(booking.real_final_date,bill_final);
+                    break;
+                default:
+                    break;
+                }
+                b++;
+            }
+            else if(caractereActuel =='@')
+            {
+                switch(c)
+                {
+                case 0:
+                    price.cleaning_both+=(price.cleaning_in+price.cleaning_out);
+                    sprintf(plop,"%d",price.cleaning_both);
+                    fputs(plop,bill_final);
+                    break;
+                case 1:
+                    sprintf(plop,"%.2lf",price.fuel);
+                    fputs(plop,bill_final);
+                    break;
+                case 2:
+                    sprintf(plop,"%.2f",price.hour);
+                    fputs(plop,bill_final);
+                    break;
+                case 3:
+                    sprintf(plop,"%d",price.penality);
+                    fputs(plop,bill_final);
+                    break;
+                case 4:
+                    price.total = price.cleaning_both+price.fuel+price.hour+price.penality;
+                    sprintf(plop,"%.2lf",price.total);
+                    fputs(plop,bill_final);
+                    break;
+                default:
+                    break;
+                }
+                c++;
+            }
+            else
+            {
+                fputc(caractereActuel,bill_final);
+            }
+
+            }while(!feof(bill_base));
+        fclose(bill_base);
+        fclose(bill_final);
+    }
+    else
+    {
+        printf("ERROR : An error occured please wait a moment...\n");
+    }
 
 
 }

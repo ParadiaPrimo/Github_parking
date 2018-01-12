@@ -19,6 +19,8 @@ Cleaning : @
 
 Fuel : @
 
+Parking : @
+
 Penality : @
 
 Total : @

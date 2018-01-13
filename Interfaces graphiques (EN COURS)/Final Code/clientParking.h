@@ -1,8 +1,8 @@
 
-void client_sing_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail);
+void client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail);
 
 
-void client_sing_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
+void client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 {
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;

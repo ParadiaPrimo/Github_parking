@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <winsock.h>
+#include <MYSQL/mysql.h>
+#include <winsock2.h>
+#include "clientParking.h"
+
+
 static void messageError();
 static void grabCarId(GtkWidget *widget, gpointer data);
 static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2);
@@ -546,6 +552,29 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
     printf("Password: %s\n", password);
     password2 = gtk_entry_get_text(GTK_ENTRY(value[4]));
     printf("Password2: %s\n", password2);
+
+       if(strcmp(password2,password)==0)
+    {
+        MYSQL *mysql;
+        char request[150];
+        mysql = mysql_init(NULL);
+        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+
+        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
+        {
+            printf("Connexion OK! \n");
+            client_sing_in(mysql,name,surname,email,password);
+            mysql_close(mysql);
+        }
+        else {
+            printf("Erreur connexion!");
+        }
+    }
+    else
+    {
+            printf("ERROR : The password is not correct");
+    }
+
 
 }
 

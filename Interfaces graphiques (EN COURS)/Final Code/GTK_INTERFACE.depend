@@ -2504,3 +2504,15 @@
 	<string.h>
 	<stdio.h>
 
+1515813082 source:d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\main.c
+	<gtk/gtk.h>
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	<winsock.h>
+	<MYSQL/mysql.h>
+	<winsock2.h>
+	"clientParking.h"
+
+1515813355 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
+

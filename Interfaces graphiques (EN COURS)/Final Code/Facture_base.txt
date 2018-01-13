@@ -1,0 +1,26 @@
+Bill ID : %
+Car numberplate : %
+
+		========================================
+		======		Park'Car	  ======
+		========================================
+
+Customer name : %  %
+Bank account : XXXX-XXXX-XXXX-%
+
+
+Booking detail :
+	From : *			to : *
+
+Realtime booking :
+	From : *			to : *
+
+Cleaning : @
+
+Fuel : @
+
+Parking : @
+
+Penality : @
+
+Total : @

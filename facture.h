@@ -1,4 +1,4 @@
-void facture_check(MYSQL *mysql);
+void facture_check(MYSQL *mysql,char *plate);
 
 
 typedef struct Info
@@ -34,7 +34,7 @@ typedef struct Bonus_price
 
 } Bonus_price;
 
-void facture_check(MYSQL *mysql,char plate)
+void facture_check(MYSQL *mysql,char *plate)
 {
     Info user;
     Date booking;
@@ -223,7 +223,7 @@ void facture_check(MYSQL *mysql,char plate)
     mysql_free_result(result);
 
     FILE* bill_base = fopen("facture_base.txt","r");
-    FILE* bill_final = fopen("facture.txt","w");
+    FILE* bill_final = fopen("facture.txt","w+");
     char caractereActuel;
     char plop[150];
 
@@ -295,23 +295,28 @@ void facture_check(MYSQL *mysql,char plate)
                     price.cleaning_both+=(price.cleaning_in+price.cleaning_out);
                     sprintf(plop,"%d",price.cleaning_both);
                     fputs(plop,bill_final);
+                    fputc('€',bill_final);
                     break;
                 case 1:
                     sprintf(plop,"%.2lf",price.fuel);
                     fputs(plop,bill_final);
+                    fputc('€',bill_final);
                     break;
                 case 2:
                     sprintf(plop,"%.2f",price.hour);
                     fputs(plop,bill_final);
+                    fputc('€',bill_final);
                     break;
                 case 3:
                     sprintf(plop,"%d",price.penality);
                     fputs(plop,bill_final);
+                    fputc('€',bill_final);
                     break;
                 case 4:
                     price.total = price.cleaning_both+price.fuel+price.hour+price.penality;
                     sprintf(plop,"%.2lf",price.total);
                     fputs(plop,bill_final);
+                    fputc('€',bill_final);
                     break;
                 default:
                     break;
@@ -320,17 +325,19 @@ void facture_check(MYSQL *mysql,char plate)
             }
             else
             {
+                if(caractereActuel == EOF)
+                    break;
                 fputc(caractereActuel,bill_final);
             }
 
             }while(!feof(bill_base));
         fclose(bill_base);
         fclose(bill_final);
+        sprintf(request,"UPDATE reservation SET paye=1 WHERE id_reservation =%d",user.id_booking);
+        mysql_query(mysql,request);
     }
     else
     {
         printf("ERROR : An error occured please wait a moment...\n");
     }
-
-
 }

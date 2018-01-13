@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  127.0.0.1
--- Généré le :  Lun 01 Janvier 2018 à 23:17
+-- Généré le :  Sam 13 Janvier 2018 à 00:40
 -- Version du serveur :  5.7.14
 -- Version de PHP :  5.6.25
 
@@ -39,20 +39,7 @@ CREATE TABLE `cb` (
 --
 
 INSERT INTO `cb` (`id_cb`, `id_proprio`, `code_bancaire`, `crypto`, `date_expi`) VALUES
-(1, 1, '1111222233334444', '222', '2019-06-25'),
-(2, 1, '1111254352526363', '123', '2019-03-01');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `facture`
---
-
-CREATE TABLE `facture` (
-  `id_cb` int(11) NOT NULL,
-  `id_reservation` int(11) NOT NULL,
-  `id_voiture` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+(1, 1, '1111222233334444', '222', '2019-06-25');
 
 -- --------------------------------------------------------
 
@@ -74,7 +61,9 @@ CREATE TABLE `proprietaire` (
 --
 
 INSERT INTO `proprietaire` (`id_proprio`, `nom`, `prenom`, `password`, `mail`, `abonnement`) VALUES
-(1, 'Ky', 'Stéphane', 'plop', 'sky050577@gmail.com', 2);
+(1, 'Ky', 'Stephane', 'plop', 'sky050577@gmail.com', 2),
+(2, 'sdddf', 'psdlfpl', 'dpfl', 'sdfsdf', 0),
+(0, 'dummy', 'dummy', '', '', -1);
 
 -- --------------------------------------------------------
 
@@ -103,7 +92,7 @@ CREATE TABLE `reservation` (
 --
 
 INSERT INTO `reservation` (`id_reservation`, `id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true start`, `date_true_end`, `lavage_ext`, `lavage_int`, `lavage_total`, `essence`, `actif`, `fini`, `paye`) VALUES
-(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-04 04:19:35', 0, 0, 0, 0, 1, 1, 0);
+(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-02 04:19:35', 0, 0, 0, 16, 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -126,7 +115,7 @@ INSERT INTO `voiture` (`id_voiture`, `id_proprio`, `plaque_immatriculation`, `et
 (1, 1, 'EL 110 AM', 0),
 (2, 1, '65 CKL 77', 1),
 (3, 1, 'EL 220 EM', 0),
-(4, 1, 'BATMOBILE!', 0);
+(4, 1, 'BATMOBILE!', 1);
 
 --
 -- Index pour les tables exportées
@@ -136,13 +125,8 @@ INSERT INTO `voiture` (`id_voiture`, `id_proprio`, `plaque_immatriculation`, `et
 -- Index pour la table `cb`
 --
 ALTER TABLE `cb`
-  ADD PRIMARY KEY (`id_cb`);
-
---
--- Index pour la table `facture`
---
-ALTER TABLE `facture`
-  ADD PRIMARY KEY (`id_reservation`,`id_voiture`,`id_cb`);
+  ADD PRIMARY KEY (`id_cb`),
+  ADD UNIQUE KEY `id_proprio` (`id_proprio`);
 
 --
 -- Index pour la table `proprietaire`
@@ -175,7 +159,7 @@ ALTER TABLE `cb`
 -- AUTO_INCREMENT pour la table `proprietaire`
 --
 ALTER TABLE `proprietaire`
-  MODIFY `id_proprio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_proprio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `reservation`
 --

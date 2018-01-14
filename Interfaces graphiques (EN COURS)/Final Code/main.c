@@ -808,6 +808,8 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
 }
 static void grabPaymentData(GtkWidget *widget, gpointer data){
 
+    int error;
+
     GtkWidget **value = data;
     char *information[4];
     information[0] = gtk_entry_get_text(GTK_ENTRY(value[0])); //CARD NUMBER
@@ -822,7 +824,30 @@ static void grabPaymentData(GtkWidget *widget, gpointer data){
     if(strlen(information[0]) != 16 || strlen(information[1]) != 3 || strlen(information[2]) != 6){
         messageErrorInvalidCC();
     }else{
-        messageSuccessPayment();
+
+        MYSQL *mysql;
+        char request[150];
+        mysql = mysql_init(NULL);
+        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+
+        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
+        {   printf("bdd connection ok\n");
+            error = client_cb_register(mysql,information[0],information[1],information[2],information[3]);
+            mysql_close(mysql);
+            if(error == 0)
+            {
+                printf("cb added\n");
+                messageSuccessPayment();
+            }
+            else
+            {
+                printf("plop\n");
+            }
+        }
+        else {
+            messageErrorConnection();
+        }
+
     }
 
 }

@@ -93,7 +93,7 @@ static void messageSuccessPayment(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Payment accepted\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your payment has been successfully accepted");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your bank account is successfully registered");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 

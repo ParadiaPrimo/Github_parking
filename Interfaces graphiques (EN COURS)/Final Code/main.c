@@ -252,7 +252,6 @@ int main(int argc, char **argv){
         subvBox3 = gtk_vbox_new (FALSE, 0);
         gtk_box_pack_start (GTK_BOX(hbox), subvBox3, FALSE, FALSE, 10);
 
-
         //YEAR
         textLabel = gtk_label_new ("Year");
         gtk_misc_set_alignment(GTK_MISC (textLabel), 0, 0.5);
@@ -443,6 +442,7 @@ int main(int argc, char **argv){
 
     GtkWidget *subTitleLabel[3];
     gchar *subTitle[3];
+    GtkWidget *getValue[2];
 
     vBox3 = gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(window), vBox3);
@@ -521,21 +521,21 @@ int main(int argc, char **argv){
     gtk_box_pack_start (GTK_BOX (subBox3[4]), textLabel, FALSE, FALSE, 10);
 
     adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 0.0, 3.0, 1.0, 5.0, 0.0);
-    spinner[0] = gtk_spin_button_new(adj, 1.0, 0);
+    getValue[0] = gtk_spin_button_new(adj, 1.0, 0);
 
-    gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[0]), TRUE);
-    gtk_box_pack_start (GTK_BOX (subBox3[4]), spinner[0], FALSE, TRUE, 10);
+    gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(getValue[0]), TRUE);
+    gtk_box_pack_start (GTK_BOX (subBox3[4]), getValue[0], FALSE, TRUE, 10);
 
     gtk_table_attach(GTK_TABLE(boxArray), subBox3[4], 11, 12, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
 
     textLabel = gtk_label_new("Enter your car registration");
-    spinner[1] = gtk_entry_new();
+    getValue[1] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(boxArray), textLabel, 13, 14, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
-    gtk_table_attach(GTK_TABLE(boxArray), spinner[1], 14, 15, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
+    gtk_table_attach(GTK_TABLE(boxArray), getValue[1], 14, 15, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
 
     validButton = gtk_button_new_with_label("I choose this subscription");
     //g_signal_connect(validButton, "clicked", G_CALLBACK(toggledFunction), &subValue);
-    g_signal_connect(validButton, "clicked", G_CALLBACK(grabSubscriptionData), &spinner);
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabSubscriptionData), &getValue);
 
     gtk_box_pack_start(GTK_BOX(subBox3[4]), validButton, FALSE, FALSE, 0);
 

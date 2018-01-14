@@ -75,25 +75,26 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
 	sprintf(request,"SELECT id_proprio FROM proprietaire WHERE  mail = '%s'",mail);
 	mysql_query(mysql,request);
 	result = mysql_use_result(mysql);
+
 	if(result != NULL)
     {
         row = mysql_fetch_row(result);
         user_info.id_proprio = atoi(row[0]);
         sprintf(user_info.expi,"%c%c%c%c-%c%c-01",expiration[2],expiration[3],expiration[4],expiration[5],expiration[0],expiration[1]);
-        sprintf(user_info.char_month_expi,"%c%c%",expiration[0],expiration[1]);
+        sprintf(user_info.char_month_expi,"%c%c",expiration[0],expiration[1]);
         sprintf(user_info.char_year_expi,"%c%c%c%c",expiration[2],expiration[3],expiration[4],expiration[5]);
         user_info.month_expi = atoi(user_info.char_month_expi);
         user_info.year_expi = atoi(user_info.char_year_expi);
-
+mysql_free_result(result);
         if(user_info.year_expi>=2018 || user_info.month_expi<=12 || user_info.month_expi>=1)
         {
             printf("expipipi : %s\n",user_info.expi);
             printf("user idididid : %d\n",user_info.id_proprio);
-
-            sprintf(request,"INSERT INTO `cb`(`id_proprio`, `code_bancaire`, `crypto`, `date_expi`) VALUES (%d,'%s','%s',STR_TO_DATE('%s','%s'))",user_info.id_proprio,account_number,crypto,user_info.expi,tempo);
+            sprintf(request,"INSERT INTO cb(`id_proprio`, `code_bancaire`, `crypto`,`date_expi`) VALUES (%d,'%s','%s',NULL);",user_info.id_proprio,account_number,crypto);
             printf("%s\n",request);
             mysql_query(mysql,request);
-            /**IMPORTANT : this function doesn't add the line in database but when you use the sql line in database it works with the same instruction **/
+            sprintf(request,"UPDATE cb SET date_expi ='%s' WHERE id_proprio = %d;",user_info.expi,user_info.id_proprio);
+            mysql_query(mysql,request);
             return 0;
         }
     }

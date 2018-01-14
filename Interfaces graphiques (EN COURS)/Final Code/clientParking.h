@@ -1,8 +1,8 @@
 
-void client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail);
+int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail);
 
 
-void client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
+int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 {
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;
@@ -26,14 +26,20 @@ void client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 		row = mysql_fetch_row(result);
 
 		if(row != NULL)
-			printf("Account successfully created\n");
+		{
+		    printf("Account successfully created\n");
+            return 0;
+		}
 		else
-			printf("ERROR : The account cannot be created\n");
-
+		{
+		    printf("ERROR : The account cannot be created\n");
+            return 1;
+		}
 	}
 	else
 	{
 		printf("ERROR : The account already exist\n");
+        return 2;
 	}
 	mysql_free_result(result);
 }

@@ -16,16 +16,7 @@ enum {
 
 static void bookCancelled(GtkWidget *widget);
 static void grabPaymentData(GtkWidget *widget, gpointer data);
-static void messageSuccessPayment();
-static void messageSubscriptionChosen();
-static void messageErrorInvalidCC();
-static void messageSuccessCancelled();
-static void messageErrorPassword();
-static void messageErrorConnection();
-static void messageSuccess();
 static void grabEntryData(GtkWidget *widget, gpointer data);
-static void messageError();
-static void messageErrorCar();
 static void grabCarId(GtkWidget *widget, gpointer data);
 static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2);
 static void grabReservationData(GtkWidget *spinner, gpointer data);
@@ -373,7 +364,7 @@ int main(int argc, char **argv){
     formArray = gtk_table_new(5, 2, TRUE);
     gtk_box_pack_start(GTK_BOX(vBox2), formArray, FALSE, FALSE, 10);
     //LICENSE PLATE
-    arrayText = gtk_label_new("Enter your car registration");
+    arrayText = gtk_label_new("Enter your car plate");
     subText = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(formArray), arrayText, 0, 1, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
     gtk_table_attach(GTK_TABLE(formArray), subText, 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
@@ -728,6 +719,8 @@ int toggledFunction(GtkWidget *widget, gpointer data){
 /** REGISTRATION FORM - COLLECT DATA **/
 static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2){
 
+    int error;
+
     GtkWidget **value = data;
     name = gtk_entry_get_text(GTK_ENTRY(value[0]));
     printf("Name: %s\n", name);
@@ -740,7 +733,7 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
     password2 = gtk_entry_get_text(GTK_ENTRY(value[4]));
     printf("Password2: %s\n", password2);
 
-       /*if(strcmp(password2,password)==0)
+    if(strcmp(password2,password)==0)
     {
         MYSQL *mysql;
         char request[150];
@@ -749,9 +742,21 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
 
         if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
         {
-            messageSuccess();
-            client_sing_in(mysql,name,surname,email,password);
+            //messageSuccess();
+            error = client_sing_in(mysql,name,surname,email,password);
             mysql_close(mysql);
+            if(error == 0)
+            {
+                messageSuccessAccountCreation();
+            }
+            else if(error == 1)
+            {
+                messageAccountNotCreated();
+            }
+            else if(error == 2)
+            {
+                messageAccountAlreadyExist();
+            }
         }
         else {
             messageErrorConnection();
@@ -760,7 +765,7 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
     else
     {
             messageErrorPassword();
-    }*/
+    }
 
 }
 static void grabPaymentData(GtkWidget *widget, gpointer data){
@@ -927,118 +932,6 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
         messageErrorCar();
 
     }
-
-}
-//ALL MESSAGE DIALOG POP UP
-static void messageError(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The specified date is wrong");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-
-static void messageErrorCar(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The car number plate is invalid or doesn't exist");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-
-static void messageSuccess(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Account created\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account has been successfully created");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-static void messageSuccessCancelled(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Cancelled!\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your book has been cancelled successfully!");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-static void messageSuccessPayment(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Payment accepted\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your payment has been successfully accepted");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-
-static void messageErrorPassword(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Warning\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your password is incorrect");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-static void messageErrorConnection(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Warning\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Connection failed");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-static void messageErrorInvalidCC(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The specified card number is invalid");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
-
-}
-static void messageSubscriptionChosen(){
-
-  GtkWidget *dialog;
-  GtkWidget *window;
-  window = gtk_window_new(GTK_WINDOW_POPUP);
-
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Thank you!\n");
-  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "You chose the ");
-  gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy (dialog);
 
 }
 

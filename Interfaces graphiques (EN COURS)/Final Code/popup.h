@@ -9,7 +9,9 @@ static void messageErrorPassword();
 static void messageErrorConnection();
 static void messageErrorInvalidCC();
 static void messageSubscriptionChosen();
-
+static void messageEnterParking();
+static void messageLeavingParking();
+static void messageSuccessReservation();
 
 //ALL MESSAGE DIALOG POP UP
 static void messageError(){
@@ -142,7 +144,43 @@ static void messageSubscriptionChosen(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Thank you!\n");
-  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "You chose the ");
+  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "Your choice has been registered.");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy (dialog);
+
+}
+static void messageEnterParking(){
+
+  GtkWidget *dialog;
+  GtkWidget *window;
+  window = gtk_window_new(GTK_WINDOW_POPUP);
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Welcome!\n");
+  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "Your car has been parked successfully.");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy (dialog);
+
+}
+static void messageLeavingParking(){
+
+  GtkWidget *dialog;
+  GtkWidget *window;
+  window = gtk_window_new(GTK_WINDOW_POPUP);
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Goodbye!\n");
+  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "You are leaving the parking.");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy (dialog);
+
+}
+static void messageSuccessReservation(){
+
+  GtkWidget *dialog;
+  GtkWidget *window;
+  window = gtk_window_new(GTK_WINDOW_POPUP);
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Reservation completed!\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your reservation has been considered. If");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 

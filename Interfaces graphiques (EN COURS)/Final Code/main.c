@@ -13,14 +13,14 @@ enum {
     TOGGLE_COLUMN,
     N_COLUMN
 };
-
+static void grabSubscriptionData(GtkWidget *widget, gpointer data);
 static void bookCancelled(GtkWidget *widget);
 static void grabPaymentData(GtkWidget *widget, gpointer data);
 static void grabEntryData(GtkWidget *widget, gpointer data);
 static void grabCarId(GtkWidget *widget, gpointer data);
 static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2);
 static void grabReservationData(GtkWidget *spinner, gpointer data);
-int toggledFunction(GtkWidget *widget, gpointer data);
+//int toggledFunction(GtkWidget *widget, gpointer data);
 
 int main(int argc, char **argv){
 
@@ -29,14 +29,18 @@ int main(int argc, char **argv){
     GtkWidget *notebook;
     //ALL BOXES/CONTAINERS
     GtkWidget *vBox;
+    GtkWidget *vBoxb;
+    GtkWidget *subvBoxb;
     GtkWidget *subvBox;
-
+    GtkWidget *frame;
     //LABEL NOTEBOOK
     GtkWidget *pTabLabel;
     gchar *sTabLabel;
     //TITLE
     GtkWidget *headerTitleLabel;
     gchar *headerTitle;
+    GtkWidget *textLabel;
+    gchar *text;
     //FORM
     GtkWidget *formArray;
     GtkWidget *formName[4];
@@ -49,21 +53,66 @@ int main(int argc, char **argv){
     //INITIALIZATION OF GTK
     gtk_init(&argc,&argv);
 
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "PARK'CAR");
-    gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
+    gtk_window_set_default_size(GTK_WINDOW(window), 600, 720);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     vBox = gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(window), vBox);
 
+
     /* Creation du GtkNotebook */
     notebook = gtk_notebook_new();
     gtk_box_pack_start(GTK_BOX(vBox), notebook, TRUE, TRUE, 0);
+
     /* Position des onglets : en bas */
     gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_TOP);
     /* Ajout des boutons de navigation */
     gtk_notebook_set_scrollable(GTK_NOTEBOOK(notebook), TRUE);
+
+    vBoxb = gtk_vbox_new(FALSE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vBoxb);
+
+
+    headerTitle = g_locale_from_utf8("\n\n<b><big>Welcome to PARK'CAR\nBook your parking space</big></b>\n\n", -1, NULL, NULL, NULL);
+
+    headerTitleLabel = gtk_label_new(headerTitle);
+
+    gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
+    gtk_label_set_justify(GTK_LABEL(headerTitleLabel), GTK_JUSTIFY_CENTER);
+    gtk_box_pack_start(GTK_BOX(vBoxb), headerTitleLabel, FALSE, FALSE, 0);
+
+    frame = gtk_frame_new("How does it work?");
+
+    gtk_container_add(vBoxb, frame);
+    subvBoxb = gtk_vbox_new(FALSE, 10);
+    gtk_container_add(GTK_CONTAINER(frame), subvBoxb);
+
+
+    textLabel = gtk_label_new("\tIf you are interesting by a parking spot in Paris, PARK'CAR allows you to park your car safely.\n"
+                              "To book a parking space you have to:\n\t- Click on 'Book your parking space' and follow instructions"
+                              "\n\t- Click on 'Payment' to add your credit card\n"
+                              "PARK'CAR propose different subscriptions and prices for our customers. For that purpose, click on 'Offers & Subscriptions' for check all our services."
+                              "\n\nYou can check your reservation, if you want to check it, you have to indicate your car numberplate\n"
+
+                              "If you want to enter to the parking, please indicate your car numberplate, same thing if you want to exit the parking lot.\n"
+                              "For that purpose, click on 'Consult our parking'.");
+
+    gtk_box_pack_start(GTK_BOX(subvBoxb), textLabel, FALSE, FALSE, 40);
+    headerTitle = g_locale_from_utf8("\n\n<b><big>Let's get started!</big></b>\n\n", -1, NULL, NULL, NULL);
+
+    headerTitleLabel = gtk_label_new(headerTitle);
+
+    gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
+    gtk_label_set_justify(GTK_LABEL(headerTitleLabel), GTK_JUSTIFY_CENTER);
+    gtk_box_pack_start(GTK_BOX(subvBoxb), headerTitleLabel, FALSE, FALSE, 0);
+
+    sTabLabel = g_strdup_printf("Home");
+    pTabLabel = gtk_label_new(sTabLabel);
+
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vBoxb, pTabLabel);
 
     subvBox = gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(window), subvBox);
@@ -72,47 +121,50 @@ int main(int argc, char **argv){
 
     gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
     gtk_label_set_justify(GTK_LABEL(headerTitleLabel), GTK_JUSTIFY_CENTER);
-    gtk_box_pack_start(GTK_BOX(subvBox), headerTitleLabel, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(subvBox), headerTitleLabel, FALSE, FALSE, 50);
 
-    formArray = gtk_table_new(5, 2, TRUE);
-    gtk_box_pack_start(GTK_BOX(subvBox), formArray, FALSE, FALSE, 0);
+    textLabel = gtk_label_new("Please fill all the text boxes and click on the button for validate your registration.");
+    gtk_box_pack_start(GTK_BOX(subvBox), textLabel, FALSE, FALSE, 50);
+
+    formArray = gtk_table_new(20, 2, TRUE);
+    gtk_box_pack_start(GTK_BOX(subvBox), formArray, FALSE, TRUE, 40);
 
     //NAME
     formName[0] = gtk_label_new("Name");
     formText[0] = gtk_entry_new();
 
-    gtk_table_attach(GTK_TABLE(formArray), formName[0], 0, 1, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), formText[0], 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formName[0], 4, 5, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formText[0], 5, 6, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 9, 10);
 
     //SURNAME
     formName[1] = gtk_label_new("Surname");
     formText[1] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[1], 0, 1, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), formText[1], 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formName[1], 4, 5, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formText[1], 5, 6, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 9, 10);
 
     //MAIL
     formName[2] = gtk_label_new("E-mail");
     formText[2] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), formName[2], 0, 1, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), formText[2], 1, 2, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formName[2], 4, 5, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formText[2], 5, 6, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 9, 10);
 
     //PASSWORD
     formName[3] = gtk_label_new("Password");
     formText[3] = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(formText[3]), FALSE); //HIDE PASSWORD
     gtk_entry_set_invisible_char(GTK_ENTRY(formText[3]), '*'); //REPLACE THE CHARACTER BY *
-    gtk_table_attach(GTK_TABLE(formArray), formName[3], 0, 1, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), formText[3], 1, 2, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formName[3], 4, 5, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formText[3], 5, 6, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 9, 10);
     //PASSWORD 2
     formName[4] = gtk_label_new("Confirm your password");
     formText[4] = gtk_entry_new();
     gtk_entry_set_visibility(GTK_ENTRY(formText[4]), FALSE); //HIDE PASSWORD
     gtk_entry_set_invisible_char(GTK_ENTRY(formText[4]), '*'); //REPLACE THE CHARACTER BY *
-    gtk_table_attach(GTK_TABLE(formArray), formName[4], 0, 1, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), formText[4], 1, 2, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formName[4], 4, 5, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), formText[4], 5, 6, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 9, 10);
 
     validButton = gtk_button_new_with_label("Create my account");
-    gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), validButton, 5, 6, 6, 7, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     //CALL FUNCTIONS: buttonClicked
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabRegistrationFormData), &formText);
@@ -132,13 +184,10 @@ int main(int argc, char **argv){
     GtkWidget *hbox;
     GtkWidget *arrayText;
     GtkWidget *subText;
-    GtkWidget *textLabel;
-    gchar *text;
 
-    GtkWidget *frame;
     GtkWidget *vBoxFrame;
 
-    GtkWidget *spinner[11];
+    GtkWidget *spinner[12];
 
     GtkAdjustment *adj;
     vBox2 = gtk_vbox_new(FALSE, 0);
@@ -154,15 +203,15 @@ int main(int argc, char **argv){
 
     vBoxFrame = gtk_vbox_new(TRUE, 5);
     gtk_container_add(GTK_CONTAINER(frame), vBoxFrame);
-    textLabel = gtk_label_new("Place des 5 Martyrs du Lycee Buffon\n75015 PARIS\n");
-    gtk_box_pack_start(GTK_BOX(vBoxFrame), textLabel, FALSE, FALSE, 10);
+    textLabel = gtk_label_new("Place des 5 Martyrs du Lycee Buffon\n75015 PARIS\n\nParking schedule: Available 24 hours a day");
+    gtk_box_pack_start(GTK_BOX(vBoxFrame), textLabel, FALSE, FALSE, 50);
 
     frame = gtk_frame_new("Specify your dates - Arriving");
     gtk_box_pack_start(GTK_BOX(vBox2), frame, FALSE, FALSE, 0);
 
 
         subvBox2 = gtk_vbox_new (FALSE, 0);
-        gtk_container_set_border_width (GTK_CONTAINER (subvBox2), 10);
+        gtk_container_set_border_width(GTK_CONTAINER (subvBox2), 10);
         gtk_container_add (GTK_CONTAINER(frame), subvBox2);
 
         hbox = gtk_hbox_new (FALSE, 0);
@@ -364,16 +413,16 @@ int main(int argc, char **argv){
     formArray = gtk_table_new(5, 2, TRUE);
     gtk_box_pack_start(GTK_BOX(vBox2), formArray, FALSE, FALSE, 10);
     //LICENSE PLATE
-    arrayText = gtk_label_new("Enter your car plate");
-    subText = gtk_entry_new();
+    arrayText = gtk_label_new("Enter your car registration");
+    spinner[12] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(formArray), arrayText, 0, 1, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), subText, 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), spinner[12], 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     validButton = gtk_button_new_with_label("Book my parking space");
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabReservationData), &spinner); //ALL CONTENTS FROM SPINNERS
-    g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), subText); //TAKE CAR NUMBER PLATE
+    //g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), subText); //TAKE CAR NUMBER PLATE
 
     sTabLabel = g_strdup_printf("Book your parking space");
     pTabLabel = gtk_label_new(sTabLabel);
@@ -399,19 +448,19 @@ int main(int argc, char **argv){
     gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
     gtk_label_set_justify(GTK_LABEL(headerTitleLabel), GTK_JUSTIFY_CENTER);
 
-    gtk_box_pack_start(GTK_BOX(vBox3), headerTitleLabel, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vBox3), headerTitleLabel, FALSE, FALSE, 10);
     frame = gtk_frame_new("Our subscriptions");
-    gtk_box_pack_start(GTK_BOX(vBox3), frame, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(vBox3), frame, FALSE, FALSE, 50);
     subvBox3b = gtk_vbox_new(FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(frame), subvBox3b);
 
     boxArray = gtk_table_new(5, 12, FALSE);
-    gtk_box_pack_start(GTK_BOX(subvBox3b), boxArray, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(subvBox3b), boxArray, FALSE, FALSE, 40);
 
     i = 0;
     for(i = 0; i < 5; i++){
-        subBox3[i] = gtk_vbox_new(FALSE, 0);
+        subBox3[i] = gtk_vbox_new(FALSE, 15);
     }
 
     subTitle[0] = g_locale_from_utf8("\n<span>Classic</span>\n\n<span>29,99 euros</span><sup>   per month</sup>\n"
@@ -421,7 +470,7 @@ int main(int argc, char **argv){
     gtk_label_set_justify(GTK_LABEL(subTitleLabel[0]), GTK_JUSTIFY_LEFT);
     gtk_box_pack_start(GTK_BOX(subBox3[0]), subTitleLabel[0], FALSE, FALSE, 0);
 
-    gtk_table_attach(GTK_TABLE(boxArray), subBox3[0], 2, 3, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(boxArray), subBox3[0], 2, 3, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 50, 10);
 
     subTitle[1] = g_locale_from_utf8("\n<span>Premium</span>\n\n<span>46,99 euros</span><sup>   per month</sup>\n"
                                      "\n\n\n\n<span>With this subscription, you can:\n\n Park your car (1 euros /hour)\nCar wash \n\tInside: 10 euros\n\tOutsite: 15 euros\n\tBoth: 20 euros\nFilling up the gas tank (0,90 /L)</span>", -1, NULL, NULL, NULL);
@@ -430,7 +479,7 @@ int main(int argc, char **argv){
     gtk_label_set_justify(GTK_LABEL(subTitleLabel[1]), GTK_JUSTIFY_LEFT);
     gtk_box_pack_start(GTK_BOX(subBox3[1]), subTitleLabel[1], FALSE, FALSE, 0);
 
-    gtk_table_attach(GTK_TABLE(boxArray), subBox3[1], 3, 4, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(boxArray), subBox3[1], 3, 4, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 50, 10);
 
     subTitle[2] = g_locale_from_utf8("\n<span>Premium Plus</span>\n\n<span>78,99 euros</span><sup>   per month</sup>\n"
                                      "\n\n\n\n<span>With this subscription, you can:\n\n Park your car (1 euros /hour)\nCar wash \n\tInside: 10 euros\n\tOutsite: 15 euros\n\tBoth: 20 euros\nFilling up the gas tank (0,70 /L)</span>", -1, NULL, NULL, NULL);
@@ -439,12 +488,12 @@ int main(int argc, char **argv){
     gtk_label_set_justify(GTK_LABEL(subTitleLabel[2]), GTK_JUSTIFY_LEFT);
     gtk_box_pack_start(GTK_BOX(subBox3[2]), subTitleLabel[2], FALSE, FALSE, 0);
 
-    gtk_table_attach(GTK_TABLE(boxArray), subBox3[2], 5, 6, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(boxArray), subBox3[2], 5, 6, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 50, 10);
 
-    GtkWidget *radio1, *radio2, *radio3;
+    //GtkWidget *radio1, *radio2, *radio3;
 
     int subValue; //THE SUSBCRIPTION NUMBER
-    subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you</span>", -1, NULL, NULL, NULL);
+    subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you\nAnd indicate your car numberplate.\n1 - Classic\n2- Premium\n3- Premium Plus</span>", -1, NULL, NULL, NULL);
     subTitleLabel[3] = gtk_label_new(subTitle[3]);
     gtk_label_set_use_markup(GTK_LABEL(subTitleLabel[3]), TRUE);
     gtk_label_set_justify(GTK_LABEL(subTitleLabel[3]), GTK_JUSTIFY_LEFT);
@@ -452,7 +501,7 @@ int main(int argc, char **argv){
 
     gtk_table_attach(GTK_TABLE(boxArray), subBox3[3], 10, 11, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
-    radio1 = gtk_radio_button_new_with_label (NULL, "Classic"); //THE FIRST RADIO BUTTON HAS NO GROUP
+    /*radio1 = gtk_radio_button_new_with_label(NULL, "Classic"); //THE FIRST RADIO BUTTON HAS NO GROUP
     radio2 = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1)), "Premium");
     radio3 = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(radio1)), "Premium Plus");
 
@@ -462,18 +511,40 @@ int main(int argc, char **argv){
     gtk_box_pack_start(GTK_BOX(subBox3[4]), radio2, FALSE, FALSE, 0);
     g_signal_connect(radio2, "toggled", G_CALLBACK(toggledFunction), (gpointer)"1");
     gtk_box_pack_start(GTK_BOX(subBox3[4]), radio3, FALSE, FALSE, 0);
-    g_signal_connect(radio3, "toggled", G_CALLBACK(toggledFunction), (gpointer)"2");
+    g_signal_connect(radio3, "toggled", G_CALLBACK(toggledFunction), (gpointer)"2");*/
+
+    textLabel = gtk_label_new ("Which subscription");
+    gtk_misc_set_alignment(GTK_MISC (textLabel), 0, 0.5);
+    gtk_box_pack_start (GTK_BOX (subBox3[4]), textLabel, FALSE, FALSE, 10);
+
+    adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 0.0, 3.0, 1.0, 5.0, 0.0);
+    spinner[0] = gtk_spin_button_new(adj, 1.0, 0);
+
+    gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(spinner[0]), TRUE);
+    gtk_box_pack_start (GTK_BOX (subBox3[4]), spinner[0], FALSE, TRUE, 10);
+
+    gtk_table_attach(GTK_TABLE(boxArray), subBox3[4], 11, 12, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
+
+    textLabel = gtk_label_new("Enter your car registration");
+    spinner[1] = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(boxArray), textLabel, 13, 14, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
+    gtk_table_attach(GTK_TABLE(boxArray), spinner[1], 14, 15, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
 
     validButton = gtk_button_new_with_label("I choose this subscription");
-    g_signal_connect(validButton, "activate", G_CALLBACK(toggledFunction), &subValue);
+    //g_signal_connect(validButton, "clicked", G_CALLBACK(toggledFunction), &subValue);
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabSubscriptionData), &spinner);
+
     gtk_box_pack_start(GTK_BOX(subBox3[4]), validButton, FALSE, FALSE, 0);
-    gtk_table_attach(GTK_TABLE(boxArray), subBox3[4], 11, 12, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     frame = gtk_frame_new("Our services");
     gtk_box_pack_start(GTK_BOX(vBox3), frame, FALSE, FALSE, 0);
     subvBox3b = gtk_vbox_new(FALSE, 0);
-
     gtk_container_add(GTK_CONTAINER(frame), subvBox3b);
+
+    textLabel = gtk_label_new("With PARK'CAR, choose the offer which best suits your needs. Your place is guaranteed. Drive to the car park and use your car numberplate."
+                              "\nOur services offered are:\n\t- To park your car\n\t- To fill up your gas tank\n\t- To have the car wash service (Inside/Outside/Total)\n\t- Free cancellation"
+                              "\n\t- Unlimited entries/exits");
+    gtk_box_pack_start(GTK_BOX(subvBox3b), textLabel, FALSE, FALSE, 40);
     sTabLabel = g_strdup_printf("Offers and subscription");
     pTabLabel = gtk_label_new(sTabLabel);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vBox3, pTabLabel);
@@ -562,9 +633,10 @@ int main(int argc, char **argv){
     subvBox4b = gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(frame), subvBox4b);
 
+
     labelText = gtk_label_new ("Parking spots available: 50\nThere is x parking space left.");
 
-    gtk_box_pack_start(GTK_BOX(subvBox4b), labelText, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(subvBox4b), labelText, FALSE, FALSE, 50);
 
     frame = gtk_frame_new("Enter in the parking now");
     gtk_box_pack_start(GTK_BOX(vBox4), frame, FALSE, FALSE, 0);
@@ -593,6 +665,8 @@ int main(int argc, char **argv){
 
     textLabel = gtk_label_new("You can exit the parking for an unlimited number of time. But also have penalties if you exceed the expected time.\n");
     gtk_box_pack_start(GTK_BOX(subvBox4b), textLabel, FALSE, FALSE, 50);
+    arrayText = gtk_table_new(5, 12, FALSE);
+    gtk_box_pack_start(GTK_BOX(subvBox4b), arrayText, FALSE, FALSE, 50);
 
     labelText = gtk_label_new("We have to checking your car numberplate, please enter your car numberplate");
     gtk_table_attach(GTK_TABLE(arrayText), labelText, 1, 2, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
@@ -602,7 +676,6 @@ int main(int argc, char **argv){
     validButton = gtk_button_new_with_label("I valid");
     gtk_table_attach(GTK_TABLE(arrayText), validButton, 1, 2, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), formArray);
-
 
     sTabLabel = g_strdup_printf("Our parking");
     pTabLabel = gtk_label_new(sTabLabel);
@@ -615,6 +688,7 @@ int main(int argc, char **argv){
     GtkWidget * vBox5;
     vBox5 = gtk_vbox_new(FALSE, 0);
     GtkWidget * subvBox5b;
+
     subvBox5b = gtk_vbox_new(FALSE, 0);
 
     //MAIN TITLE
@@ -627,7 +701,7 @@ int main(int argc, char **argv){
     gtk_box_pack_start(GTK_BOX(vBox5), subvBox5b, FALSE, FALSE, 0);
     labelText = gtk_label_new ("Before checking your reservation, please enter your car numberplate");
 
-    gtk_box_pack_start(GTK_BOX(subvBox5b), labelText, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(subvBox5b), labelText, FALSE, FALSE, 30);
     formArray = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(subvBox5b), formArray, FALSE, FALSE, 10);
 
@@ -720,7 +794,24 @@ int main(int argc, char **argv){
     return EXIT_SUCCESS;
 }
 /** RESERVATION - COLLECT WHICH SUBSCRIPTION **/
-int toggledFunction(GtkWidget *widget, gpointer data){
+static void grabSubscriptionData(GtkWidget *widget, gpointer data){
+
+    GtkWidget **value = data;
+    int *subscriptionNumber;
+    char *carId;
+    subscriptionNumber = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0])); //SUBSCRIPTION NUMBER
+    printf("Subscription number: %d\n", subscriptionNumber);
+    carId = gtk_entry_get_text(GTK_ENTRY(value[1])); //CVC CRYPTOGRAM
+    printf("Car number plate: %s\n", carId);
+
+    if(strlen(carId) != 7){
+        messageErrorCar();
+    }else{
+        //MESSAGE SUCCESS
+    }
+
+}
+/*int toggledFunction(GtkWidget *widget, gpointer data){
 
     int * sub1; //CLASSIC
     int * sub2; //PREMIUM
@@ -751,7 +842,7 @@ int toggledFunction(GtkWidget *widget, gpointer data){
         printf("Vous avez choisi l'abonnement %d", atoi(data));
     }
 
-}
+}*/
 
 
 /** REGISTRATION FORM - COLLECT DATA **/

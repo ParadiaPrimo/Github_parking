@@ -157,7 +157,7 @@ int main(int argc, char **argv){
     textLabel = gtk_label_new("Place des 5 Martyrs du Lycee Buffon\n75015 PARIS\n");
     gtk_box_pack_start(GTK_BOX(vBoxFrame), textLabel, FALSE, FALSE, 10);
 
-    frame = gtk_frame_new("Specify your dates - From");
+    frame = gtk_frame_new("Specify your dates - Arriving");
     gtk_box_pack_start(GTK_BOX(vBox2), frame, FALSE, FALSE, 0);
 
 
@@ -243,7 +243,7 @@ int main(int argc, char **argv){
         gtk_box_pack_start(GTK_BOX (subvBox3), spinner[4], FALSE, TRUE, 10);
 
 
-    frame = gtk_frame_new("Specify your dates - To");
+    frame = gtk_frame_new("Specify your dates - Leaving");
     gtk_box_pack_start(GTK_BOX(vBox2), frame, FALSE, FALSE, 0);
 
         subvBox2 = gtk_vbox_new (FALSE, 0);
@@ -566,6 +566,44 @@ int main(int argc, char **argv){
 
     gtk_box_pack_start(GTK_BOX(subvBox4b), labelText, FALSE, FALSE, 0);
 
+    frame = gtk_frame_new("Enter in the parking now");
+    gtk_box_pack_start(GTK_BOX(vBox4), frame, FALSE, FALSE, 0);
+    subvBox4b = gtk_vbox_new(FALSE, 0);
+    gtk_container_add(GTK_CONTAINER(frame), subvBox4b);
+
+    textLabel = gtk_label_new("Before entering in the parking, make sure the date of your reservation correspond to the current date and time.\n");
+    gtk_box_pack_start(GTK_BOX(subvBox4b), textLabel, FALSE, FALSE, 50);
+    arrayText = gtk_table_new(5, 12, FALSE);
+    gtk_box_pack_start(GTK_BOX(subvBox4b), arrayText, FALSE, FALSE, 50);
+
+    labelText = gtk_label_new("We have to checking your car numberplate, please enter your car numberplate");
+    gtk_table_attach(GTK_TABLE(arrayText), labelText, 1, 2, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
+    formArray = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(arrayText), formArray, 1, 2, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
+
+    validButton = gtk_button_new_with_label("I valid");
+    gtk_table_attach(GTK_TABLE(arrayText), validButton, 1, 2, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), formArray);
+
+
+    frame = gtk_frame_new("Exit the parking");
+    gtk_box_pack_start(GTK_BOX(vBox4), frame, FALSE, FALSE, 0);
+    subvBox4b = gtk_vbox_new(FALSE, 0);
+    gtk_container_add(GTK_CONTAINER(frame), subvBox4b);
+
+    textLabel = gtk_label_new("You can exit the parking for an unlimited number of time. But also have penalties if you exceed the expected time.\n");
+    gtk_box_pack_start(GTK_BOX(subvBox4b), textLabel, FALSE, FALSE, 50);
+
+    labelText = gtk_label_new("We have to checking your car numberplate, please enter your car numberplate");
+    gtk_table_attach(GTK_TABLE(arrayText), labelText, 1, 2, 2, 3, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
+    formArray = gtk_entry_new();
+    gtk_table_attach(GTK_TABLE(arrayText), formArray, 1, 2, 3, 4, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
+
+    validButton = gtk_button_new_with_label("I valid");
+    gtk_table_attach(GTK_TABLE(arrayText), validButton, 1, 2, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 10, 10);
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), formArray);
+
+
     sTabLabel = g_strdup_printf("Our parking");
     pTabLabel = gtk_label_new(sTabLabel);
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), vBox4, pTabLabel);
@@ -620,7 +658,7 @@ int main(int argc, char **argv){
     GtkCellRenderer *pCellRenderer;
     gchar *sTexte;
 
-    char *columnName[20][19] = {"ID", "Name", "Surname", "Email", "Password", "Subscription",
+    char *columnName[20][18] = {"ID", "Name", "Surname", "Email", "Password", "Subscription",
                                 "ID Car", "Car numberplate", "Parked", "ID book", "Start", "End"
                                 "Car wash Outside", "Car wash Inside", "Car wash total", "Gas", "Active", "Finished", "Payed"};
 
@@ -658,7 +696,7 @@ int main(int argc, char **argv){
     //CREATION OF THE TREE VIEW
     pListView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(pListStore));
     i = 0;
-    for(i = 0; i < 19; i++){
+    for(i = 0; i < 18; i++){
         pCellRenderer = gtk_cell_renderer_text_new();
         pColumn = gtk_tree_view_column_new_with_attributes(columnName[0][i], pCellRenderer, "text", TEXT_COLUMN, NULL);
         gtk_tree_view_append_column(GTK_TREE_VIEW(pListView), pColumn); //ADD THE COLUMN
@@ -794,6 +832,7 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
     GtkSpinButton **value = data;
     int information[14];
     int * option;
+    char *carId;
     /** FROM **/
     information[0] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0])); //DAY
     information[1] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[1])); //MONTH
@@ -830,7 +869,12 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
     }
 
     printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", information[5], information[6], information[7], information[8], information[9]);
+    carId = gtk_entry_get_text(GTK_ENTRY((char*)value[12]));
+    printf("\n%s", carId);
+    if(strlen(carId) != 7){
+        messageErrorCar();
 
+    }
 
     /** CHECK IF ERROR **/
     if(information[2] <= information[7]){ //IF YEAR <= YEAR2

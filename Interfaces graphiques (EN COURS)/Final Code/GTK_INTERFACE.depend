@@ -2498,11 +2498,16 @@
 	<string.h>
 	<stdio.h>
 
-1515899529 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\main.c
+1515942497 source:c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\main.c
 	<gtk/gtk.h>
 	<stdlib.h>
 	<string.h>
 	<stdio.h>
+	<winsock.h>
+	<MYSQL/mysql.h>
+	<winsock2.h>
+	"clientParking.h"
+	"popup.h"
 
 1515935755 source:d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\main.c
 	<gtk/gtk.h>
@@ -2516,5 +2521,7 @@
 
 1515935362 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
 
-1515813938 c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
+1515942497 c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
+
+1515942497 c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\popup.h
 

@@ -841,7 +841,7 @@ static void grabPaymentData(GtkWidget *widget, gpointer data){
             }
             else
             {
-                printf("plop\n");
+                printf("NOPE\n");
             }
         }
         else {

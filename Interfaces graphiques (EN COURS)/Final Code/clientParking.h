@@ -59,7 +59,8 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 
 int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expiration,char* mail)
 {
-
+    char tempo[9]="%Y-%m-%d";
+    printf("tempo : %s",tempo);
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;
 
@@ -89,7 +90,7 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
             printf("expipipi : %s\n",user_info.expi);
             printf("user idididid : %d\n",user_info.id_proprio);
 
-            sprintf(request,"INSERT INTO `cb`(`id_proprio`, `code_bancaire`, `crypto`, `date_expi`) VALUES (%d,'%s','%s','%s')",user_info.id_proprio,account_number,crypto,user_info.expi);
+            sprintf(request,"INSERT INTO `cb`(`id_proprio`, `code_bancaire`, `crypto`, `date_expi`) VALUES (%d,'%s','%s',STR_TO_DATE('%s','%s'))",user_info.id_proprio,account_number,crypto,user_info.expi,tempo);
             printf("%s\n",request);
             mysql_query(mysql,request);
             /**IMPORTANT : this function doesn't add the line in database but when you use the sql line in database it works with the same instruction **/

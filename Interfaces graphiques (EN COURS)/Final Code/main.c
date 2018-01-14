@@ -2,10 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-//#include <winsock.h>
-//#include <MYSQL/mysql.h>
-//#include <winsock2.h>
-//#include "clientParking.h"
+#include <winsock.h>
+#include <MYSQL/mysql.h>
+#include <winsock2.h>
+#include "clientParking.h"
+
+
+enum {
+    TEXT_COLUMN,
+    TOGGLE_COLUMN,
+    N_COLUMN
+};
+
+static void bookCancelled(GtkWidget *widget);
 static void grabPaymentData(GtkWidget *widget, gpointer data);
 static void messageSuccessPayment();
 static void messageSubscriptionChosen();
@@ -19,7 +28,7 @@ static void messageError();
 static void messageErrorCar();
 static void grabCarId(GtkWidget *widget, gpointer data);
 static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *name, char *surname, char *email, char *password, char *password2);
-static void grabReservationData(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2, int *fuel, int *carWashInside, int *carWashOutside, int *carWashTotal);
+static void grabReservationData(GtkWidget *spinner, gpointer data);
 int toggledFunction(GtkWidget *widget, gpointer data);
 
 int main(int argc, char **argv){
@@ -31,7 +40,6 @@ int main(int argc, char **argv){
     GtkWidget *vBox;
     GtkWidget *subvBox;
 
-    GtkWidget *scrollbar;
     //LABEL NOTEBOOK
     GtkWidget *pTabLabel;
     gchar *sTabLabel;
@@ -132,27 +140,18 @@ int main(int argc, char **argv){
     GtkWidget *subvBox3;
     GtkWidget *hbox;
     GtkWidget *arrayText;
-    GtkWidget *subText[3];
+    GtkWidget *subText;
     GtkWidget *textLabel;
     gchar *text;
 
     GtkWidget *frame;
     GtkWidget *vBoxFrame;
 
-    GtkWidget *box, *combo;
     GtkWidget *spinner[11];
 
     GtkAdjustment *adj;
-
-    //SCROLLBAR
-    scrollbar = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(vBox),scrollbar);
-    vBox = gtk_vbox_new(FALSE, 0);
-    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrollbar), vBox);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrollbar), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
-
     vBox2 = gtk_vbox_new(FALSE, 0);
-    gtk_container_add(GTK_CONTAINER(scrollbar), vBox2);
+    gtk_container_add(GTK_CONTAINER(window), vBox2);
     headerTitle = g_locale_from_utf8("\n\n<b><big>Book your parking space</big></b>\n\n", -1, NULL, NULL, NULL);
     headerTitleLabel = gtk_label_new(headerTitle);
     gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
@@ -371,38 +370,20 @@ int main(int argc, char **argv){
     gtk_box_pack_start (GTK_BOX(hbox), subvBox3, FALSE, FALSE, 10);
 
 
-    formArray = gtk_table_new(2, 2, TRUE);
-    gtk_box_pack_start(GTK_BOX(subvBox3), formArray, FALSE, FALSE, 10);
-    textLabel = gtk_label_new ("Credit Card Number (XXXX_XXXX_XXXX_XXXX)");
-    subText[0] = gtk_entry_new();
-
-    gtk_table_attach(GTK_TABLE(formArray), textLabel, 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), subText[0], 2, 3, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-
-    textLabel = gtk_label_new ("Credit Card CVC (XXX)");
-    gtk_misc_set_alignment(GTK_MISC (textLabel), 0, 0.5);
-
-    subText[1] = gtk_entry_new();
-    gtk_table_attach(GTK_TABLE(formArray), textLabel, 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), subText[1], 2, 3, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-
-    subvBox3 = gtk_vbox_new (FALSE, 0);
-
-
     formArray = gtk_table_new(5, 2, TRUE);
     gtk_box_pack_start(GTK_BOX(vBox2), formArray, FALSE, FALSE, 10);
     //LICENSE PLATE
     arrayText = gtk_label_new("Enter your car registration");
-    subText[2] = gtk_entry_new();
+    subText = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(formArray), arrayText, 0, 1, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-    gtk_table_attach(GTK_TABLE(formArray), subText[2], 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+    gtk_table_attach(GTK_TABLE(formArray), subText, 1, 2, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     validButton = gtk_button_new_with_label("Book my parking space");
     gtk_table_attach(GTK_TABLE(formArray), validButton, 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabReservationData), &spinner); //ALL CONTENTS FROM SPINNERS
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), subText); //TAKE CAR NUMBER PLATE
 
-    //g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), subText);
     sTabLabel = g_strdup_printf("Book your parking space");
     pTabLabel = gtk_label_new(sTabLabel);
 
@@ -413,8 +394,7 @@ int main(int argc, char **argv){
 
     GtkWidget *vBox3;
     GtkWidget *subvBox3b;
-    GtkWidget *paned;
-    GtkHPaned *hPaned;
+
     GtkWidget *boxArray;
     GtkWidget *subBox3[5];
 
@@ -471,8 +451,8 @@ int main(int argc, char **argv){
     gtk_table_attach(GTK_TABLE(boxArray), subBox3[2], 5, 6, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
 
     GtkWidget *radio1, *radio2, *radio3;
-    GtkWidget *grid;
-    int subValue;
+
+    int subValue; //THE SUSBCRIPTION NUMBER
     subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you</span>", -1, NULL, NULL, NULL);
     subTitleLabel[3] = gtk_label_new(subTitle[3]);
     gtk_label_set_use_markup(GTK_LABEL(subTitleLabel[3]), TRUE);
@@ -497,7 +477,6 @@ int main(int argc, char **argv){
     g_signal_connect(validButton, "activate", G_CALLBACK(toggledFunction), &subValue);
     gtk_box_pack_start(GTK_BOX(subBox3[4]), validButton, FALSE, FALSE, 0);
     gtk_table_attach(GTK_TABLE(boxArray), subBox3[4], 11, 12, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-
 
     frame = gtk_frame_new("Our services");
     gtk_box_pack_start(GTK_BOX(vBox3), frame, FALSE, FALSE, 0);
@@ -573,7 +552,7 @@ int main(int argc, char **argv){
     GtkWidget * subvBox4b;
     GtkWidget * labelText;
     vBox4 = gtk_vbox_new(FALSE, 0);
-    int placesAvailable = 50;
+
     char *markup;
 
     //MAIN TITLE
@@ -594,9 +573,7 @@ int main(int argc, char **argv){
 
     labelText = gtk_label_new ("Parking spots available: 50\nThere is x parking space left.");
 
-
     gtk_box_pack_start(GTK_BOX(subvBox4b), labelText, FALSE, FALSE, 0);
-
 
     sTabLabel = g_strdup_printf("Our parking");
     pTabLabel = gtk_label_new(sTabLabel);
@@ -610,9 +587,6 @@ int main(int argc, char **argv){
     vBox5 = gtk_vbox_new(FALSE, 0);
     GtkWidget * subvBox5b;
     subvBox5b = gtk_vbox_new(FALSE, 0);
-    int value;
-    //GtkWidget * labelText;
-
 
     //MAIN TITLE
     headerTitle = g_locale_from_utf8("\n\n<b><big>Consult your reservation</big></b>\n\n", -1, NULL, NULL, NULL);
@@ -646,16 +620,23 @@ int main(int argc, char **argv){
     GtkWidget * vBox6;
     vBox6 = gtk_vbox_new(FALSE, 0);
     GtkWidget * subvBox6b;
-    subvBox6b = gtk_vbox_new(FALSE, 0);
+    subvBox6b = gtk_vbox_new(TRUE, 0);
+
+    GtkWidget *pScrollbar;
+    GtkWidget *pListView;
+    GtkListStore *pListStore;
+    GtkTreeViewColumn *pColumn;
+    GtkCellRenderer *pCellRenderer;
+    gchar *sTexte;
+
+    char *columnName[20][19] = {"ID", "Name", "Surname", "Email", "Password", "Subscription",
+                                "ID Car", "Car numberplate", "Parked", "ID book", "Start", "End"
+                                "Car wash Outside", "Car wash Inside", "Car wash total", "Gas", "Active", "Finished", "Payed"};
 
     hbox = gtk_hbox_new(FALSE, 0);
 
     GtkWidget * listArray;
-    listArray = gtk_table_new(50, 20, FALSE);
-     gtk_box_pack_start(GTK_BOX(subvBox6b), listArray, FALSE, FALSE, 0);
 
-    textLabel = gtk_label_new("ID");
-    gtk_table_attach(listArray, textLabel, 1, 0, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 0);
 
     headerTitle = g_locale_from_utf8("\n\n<b><big>Administrator</big></b>\n\n", -1, NULL, NULL, NULL);
     headerTitleLabel = gtk_label_new(headerTitle);
@@ -665,8 +646,36 @@ int main(int argc, char **argv){
 
     gtk_box_pack_start(GTK_BOX(vBox6), subvBox6b, FALSE, FALSE, 0);
 
-    frame = gtk_frame_new("Our members");
-    gtk_box_pack_start(GTK_BOX(subvBox6b), frame, FALSE, FALSE, 0);
+    pListStore = gtk_list_store_new(N_COLUMN, G_TYPE_STRING, G_TYPE_BOOLEAN);
+
+    sTexte = g_malloc(12);
+    i = 0;
+    /** EXEMPLE D'INSERTION DE DONNEES **/
+    for(i = 0 ; i < 10 ; ++i){
+        GtkTreeIter pIter;
+
+        sprintf(sTexte, "Ligne %d\0", i);
+
+        gtk_list_store_append(pListStore, &pIter); //CREATION NEW LINE
+
+        /* Mise a jour des donnees */
+        gtk_list_store_set(pListStore, &pIter, TEXT_COLUMN, sTexte, TOGGLE_COLUMN, TRUE,  -1);
+    }
+
+    g_free(sTexte);
+
+    //CREATION OF THE TREE VIEW
+    pListView = gtk_tree_view_new_with_model(GTK_TREE_MODEL(pListStore));
+    i = 0;
+    for(i = 0; i < 19; i++){
+        pCellRenderer = gtk_cell_renderer_text_new();
+        pColumn = gtk_tree_view_column_new_with_attributes(columnName[0][i], pCellRenderer, "text", TEXT_COLUMN, NULL);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(pListView), pColumn); //ADD THE COLUMN
+    }
+
+
+    gtk_container_add(GTK_CONTAINER(subvBox6b), pListView);
+
 
     sTabLabel = g_strdup_printf("Administrator");
     pTabLabel = gtk_label_new(sTabLabel);
@@ -753,19 +762,18 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
             messageErrorPassword();
     }*/
 
-
 }
 static void grabPaymentData(GtkWidget *widget, gpointer data){
 
     GtkWidget **value = data;
     char *information[4];
-    information[0] = gtk_entry_get_text(GTK_ENTRY(value[0]));
+    information[0] = gtk_entry_get_text(GTK_ENTRY(value[0])); //CARD NUMBER
     printf("Card number: %s\n", information[0]);
-    information[1] = gtk_entry_get_text(GTK_ENTRY(value[1]));
+    information[1] = gtk_entry_get_text(GTK_ENTRY(value[1])); //CVC CRYPTOGRAM
     printf("Card CVC: %s\n", information[1]);
-    information[2] = gtk_entry_get_text(GTK_ENTRY(value[2]));
+    information[2] = gtk_entry_get_text(GTK_ENTRY(value[2])); //EXPIRED DATE
     printf("Date expiration: %s\n", information[2]);
-    information[3] = gtk_entry_get_text(GTK_ENTRY(value[3]));
+    information[3] = gtk_entry_get_text(GTK_ENTRY(value[3])); //EMAIL
     printf("Email: %s\n", information[3]);
 
     if(strlen(information[0]) != 16 || strlen(information[1]) != 3 || strlen(information[2]) != 6){
@@ -776,58 +784,59 @@ static void grabPaymentData(GtkWidget *widget, gpointer data){
 
 }
 
-static void grabReservationData(GtkWidget *spinner, gpointer data, int *day, int *month, int *year, int *hour, int *minute, int *day2, int *month2, int *year2, int *hour2, int *minute2, int *fuel, int *carWashInside, int *carWashOutside, int *carWashTotal){
+static void grabReservationData(GtkWidget *spinner, gpointer data){
 
     GtkSpinButton **value = data;
+    int information[14];
     int * option;
     /** FROM **/
-    day = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0]));
-    month = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[1]));
-    year = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[2]));
-    hour = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[3]));
-    minute = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[4]));
-    printf("\nFROM:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", day, month, year, hour, minute);
+    information[0] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0])); //DAY
+    information[1] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[1])); //MONTH
+    information[2] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[2])); //YEAR
+    information[3] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[3])); //HOUR
+    information[4] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[4])); //MINUTE
+    printf("\nFROM:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", information[0], information[1], information[2], information[3], information[4]);
     /** TO **/
-    day2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[5]));
-    month2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[6]));
-    year2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[7]));
-    hour2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[8]));
-    minute2 = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[9]));
+    information[5] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[5])); //DAY2
+    information[6] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[6])); //MONTH2
+    information[7] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[7])); //YEAR2
+    information[8] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[8])); //HOUR2
+    information[9] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[9])); //MINUTE2
 
-    fuel = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[10]));
+    information[10] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[10])); //FUEL (LITER)
 
-    option = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11]));
+    option = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11])); //CAR WASH OPTION
     if(option == 1){
 
-        carWashInside = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11]));
+        information[11] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11])); //INSIDE
         printf("\nInside: 1");
         //UPDATE lavage_int to 1
     }else if(option == 2){
 
-        carWashOutside = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11]));
+        information[12] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11])); //OUTSIDE
         printf("\nOutside: 1");
 
         //UPDATE lavage_ext to 1
     }else if(option == 3){
 
-        carWashTotal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11]));
+        information[13] = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[11])); //BOTH
         printf("\nTotal: 1");
         //UPDATE lavage_total to 1
     }
 
-    printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", day2, month2, year2, hour2, minute2);
+    printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", information[5], information[6], information[7], information[8], information[9]);
 
 
     /** CHECK IF ERROR **/
-    if(year2 >= year){
+    if(information[2] <= information[7]){ //IF YEAR <= YEAR2
         printf("\nYear OK");
-        if(month2 >= month){
+        if(information[1] <= information[6]){ //IF MONTH <= MONTH2
             printf("\nMonth OK");
-            if(day2 >= day){
+            if(information[0] <= information[5]){ //IF DAY <= DAY2
                 printf("\nDay OK");
-                if(hour2 >= hour){
+                if(information[3] <= information[8]){ //IF HOUR <= HOUR2
                     printf("\nHour OK");
-                    if(minute2 >= minute){
+                    if(information[4] <= information[9]){ //IF MINUTE <= MINUTE2
                         printf("\nMinute OK\nDONE!");
                     }else{
                         messageError();
@@ -845,7 +854,6 @@ static void grabReservationData(GtkWidget *spinner, gpointer data, int *day, int
         messageError();
     }
 
-    printf("ok");
 
 }
 /** FOR ADDING THE CAR NUMBERPLATE AND CHECK IF ALREADY EXISTS ON DATABASE **/
@@ -862,10 +870,10 @@ static void grabCarId(GtkWidget *widget, gpointer data){
     }
 
 }
-/** FOR CHECKING IF THE CAR NUMBERPLATE EXIST ON DATABASE**/
+/** FOR CHECKING IF THE CAR NUMBERPLATE EXIST ON DATABASE BEFORE ACCESS TO THE 'CONSULT RESERVATION' PAGE**/
 static void grabEntryData(GtkWidget *widget, gpointer data){
 
-    int value = 0;
+
     //CAR REGISTRATION
     char *carRegistration;
     carRegistration = gtk_entry_get_text(GTK_ENTRY((char*)data));
@@ -876,6 +884,7 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
     if(strlen(carRegistration) == 7){
         GtkWidget *window;
         GtkWidget *vBox;
+        GtkWidget *subvBox;
         GtkWidget *frame;
         GtkWidget *text;
         GtkWidget *textArray;
@@ -893,15 +902,22 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
         frame = gtk_frame_new("My reservation");
         gtk_box_pack_start(GTK_BOX(vBox), frame, FALSE, FALSE, 0);
 
-        textArray = gtk_table_new(6, 6, FALSE);
-        gtk_box_pack_start(frame, button, FALSE, FALSE, 0);
-        text = gtk_label_new("Planned date");
+        subvBox = gtk_vbox_new(FALSE, 0);
+        gtk_container_add(GTK_CONTAINER(frame), subvBox);
 
+        textArray = gtk_table_new(6, 6, TRUE);
+        gtk_box_pack_start(subvBox, textArray, FALSE, FALSE, 0);
+        text = gtk_label_new("Planned date\n");
+        gtk_table_attach(GTK_TABLE(textArray), text, 1, 2, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+
+        /** RECUPERATION DES DONNEES ICI VIA BDD**/
+
+
+
+        /** FIN DES RECUPERATION DES DONNEES VIA BDD **/
         button = gtk_button_new_with_label("Cancel my reservation");
-
-
-        gtk_table_attach(GTK_TABLE(textArray), button, 3, 4, 4, 5, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-
+        gtk_table_attach(GTK_TABLE(textArray), button, 5, 6, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+        g_signal_connect(button, "clicked", G_CALLBACK(bookCancelled), NULL);
 
         gtk_widget_show_all(window);
         gtk_main();
@@ -912,9 +928,8 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
 
     }
 
-
 }
-
+//ALL MESSAGE DIALOG POP UP
 static void messageError(){
 
   GtkWidget *dialog;
@@ -959,8 +974,8 @@ static void messageSuccessCancelled(){
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Account created\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your booking successfully cancelled");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Cancelled!\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your book has been cancelled successfully!");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -1027,3 +1042,9 @@ static void messageSubscriptionChosen(){
 
 }
 
+static void bookCancelled(GtkWidget *widget){
+
+    /** RECUPERATION DES DONNEES SQL **/
+
+
+}

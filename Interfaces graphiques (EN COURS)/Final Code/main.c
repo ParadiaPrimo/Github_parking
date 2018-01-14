@@ -6,7 +6,7 @@
 #include <MYSQL/mysql.h>
 #include <winsock2.h>
 #include "clientParking.h"
-
+#include "popup.h"
 
 enum {
     TEXT_COLUMN,
@@ -743,7 +743,7 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
         if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
         {
             //messageSuccess();
-            error = client_sing_in(mysql,name,surname,email,password);
+            error = client_sign_in(mysql,name,surname,email,password);
             mysql_close(mysql);
             if(error == 0)
             {

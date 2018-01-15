@@ -258,8 +258,10 @@ int activate_booking(MYSQL *mysql,char *car_id)
     printf("id_booking : %s\n",id_booking);
 
     sprintf(request,"UPDATE reservation SET date_true_start ='%s',actif = 1 WHERE id_reservation = %s;",current_date,id_booking);
-    printf("%s\n",request);
+    mysql_query(mysql,request);
+	sprintf(request,"UPDATE voiture SET etat =1 WHERE id_voiture = %s;",id_voiture);
 	mysql_query(mysql,request);
+
     return 0;
 }
 
@@ -331,6 +333,8 @@ int end_booking(MYSQL *mysql,char *car_id)
     printf("%s\n",request);
 	mysql_query(mysql,request);
 
+	sprintf(request,"UPDATE voiture SET etat =0 WHERE id_voiture = %s;",id_voiture);
+	mysql_query(mysql,request);
 
     return 0;
 }

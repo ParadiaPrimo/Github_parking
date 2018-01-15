@@ -1070,10 +1070,33 @@ static void grabCarIdEntryParking(GtkWidget *widget, gpointer data){
     carRegistration = gtk_entry_get_text(GTK_ENTRY((char*)data));
     printf("\n%s", carRegistration);
 
-    if(strlen(carRegistration) != 7){
+    if(strlen(carRegistration) != 9){
         messageErrorCar();
 
     }else{
+        int error;
+        MYSQL *mysql;
+        char request[1000];
+        mysql = mysql_init(NULL);
+        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+
+        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
+        {   printf("bdd connection ok\n");
+            error = activate_booking(mysql,carRegistration);
+            mysql_close(mysql);
+            if(error == 0)
+            {
+                printf("Booking start !\n");
+                messageSuccessPayment();
+            }
+            else
+            {
+                printf("NOPE\n");
+            }
+        }
+        else {
+            messageErrorConnection();
+        }
         messageEnterParking();
     }
 
@@ -1085,7 +1108,7 @@ static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data){
     carRegistration = gtk_entry_get_text(GTK_ENTRY((char*)data));
     printf("\n%s", carRegistration);
 
-    if(strlen(carRegistration) != 7){
+    if(strlen(carRegistration) != 9){
         messageErrorCar();
 
     }else{

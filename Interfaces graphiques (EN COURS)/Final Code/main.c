@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <winsock.h>
-#include <mysql.h>
+#include <MYSQL/mysql.h>
 #include <winsock2.h>
 #include "clientParking.h"
 #include "popup.h"
@@ -992,7 +992,7 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
     printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", information[5], information[6], information[7], information[8], information[9]);
     carId = gtk_entry_get_text(GTK_ENTRY((char*)value[12]));
     printf("\n%s", carId);
-    if(strlen(carId) != 7){
+    if(strlen(carId) != 9){
         messageErrorCar();
 
     }
@@ -1004,11 +1004,34 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
             printf("\nMonth OK");
             if(information[0] <= information[5]){ //IF DAY <= DAY2
                 printf("\nDay OK");
-                if(information[3] <= information[8]){ //IF HOUR <= HOUR2
+                if(information[3] <= information[8]||(information[0] < information[5]||information[1] < information[6]||information[2] < information[7])){ //IF HOUR <= HOUR2
                     printf("\nHour OK");
-                    if(information[4] <= information[9]){ //IF MINUTE <= MINUTE2
+                    if(information[4] <= information[9]||(information[0] < information[5]||information[1] < information[6]||information[2] < information[7])){ //IF MINUTE <= MINUTE2
                         printf("\nMinute OK\nDONE!");
-                        messageSuccessReservation();
+                        int error;
+                        MYSQL *mysql;
+                        char request[150];
+                        mysql = mysql_init(NULL);
+                        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+
+                        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
+                        {   printf("bdd connection ok\n");
+                            error = client_booking_creation(mysql,information[0],information[1],information[2],information[3],information[4],information[5],information[6],information[7],information[8],information[9],information[10],option,carId);
+                            mysql_close(mysql);
+                            if(error == 0)
+                            {
+                                printf("booking added\n");
+                                messageSuccessPayment();
+                            }
+                            else
+                            {
+                                printf("NOPE\n");
+                            }
+                        }
+                        else {
+                            messageErrorConnection();
+                        }
+
                     }else{
                         messageError();
                     }

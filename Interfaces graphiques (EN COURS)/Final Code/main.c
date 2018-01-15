@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <winsock.h>
-#include <MYSQL/mysql.h>
+#include <mysql.h>
 #include <winsock2.h>
 #include "clientParking.h"
 #include "popup.h"
@@ -467,7 +467,7 @@ int main(int argc, char **argv){
         subBox3[i] = gtk_vbox_new(FALSE, 15);
     }
 
-    subTitle[0] = g_locale_from_utf8("\n<span>Classic</span>\n\n<span>29,99 euros</span><sup>   per month</sup>\n"
+    subTitle[0] = g_locale_from_utf8("\n<span>Classic (Default)</span>\n\n<span>29,99 euros</span><sup>   per month</sup>\n"
                                      "\n\n\n\n<span>With this subscription, you can:\n\n Park your car (3 euros /hour)\nCar wash \n\tInside: 20 euros\n\tOutsite: 25 euros\n\tBoth: 35 euros\nFilling up the gas tank (1,20 /L)</span>", -1, NULL, NULL, NULL);
     subTitleLabel[0] = gtk_label_new(subTitle[0]);
     gtk_label_set_use_markup(GTK_LABEL(subTitleLabel[0]), TRUE);
@@ -497,7 +497,7 @@ int main(int argc, char **argv){
     //GtkWidget *radio1, *radio2, *radio3;
 
     int subValue; //THE SUSBCRIPTION NUMBER
-    subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you\nAnd indicate your car numberplate.\n1 - Classic\n2- Premium\n3- Premium Plus</span>", -1, NULL, NULL, NULL);
+    subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you\nAnd indicate your car numberplate.\n0 - Classic (Default)\n1- Premium\n2- Premium Plus</span>", -1, NULL, NULL, NULL);
     subTitleLabel[3] = gtk_label_new(subTitle[3]);
     gtk_label_set_use_markup(GTK_LABEL(subTitleLabel[3]), TRUE);
     gtk_label_set_justify(GTK_LABEL(subTitleLabel[3]), GTK_JUSTIFY_LEFT);
@@ -521,7 +521,7 @@ int main(int argc, char **argv){
     gtk_misc_set_alignment(GTK_MISC (textLabel), 0, 0.5);
     gtk_box_pack_start (GTK_BOX (subBox3[4]), textLabel, FALSE, FALSE, 10);
 
-    adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 0.0, 3.0, 1.0, 5.0, 0.0);
+    adj = (GtkAdjustment *)gtk_adjustment_new(0.0, 0.0, 2.0, 1.0, 5.0, 0.0);
     getValue[0] = gtk_spin_button_new(adj, 1.0, 0);
 
     gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(getValue[0]), TRUE);

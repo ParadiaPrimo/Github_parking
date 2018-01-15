@@ -1081,7 +1081,7 @@ static void grabCarId(GtkWidget *widget, gpointer data){
     carRegistration = gtk_entry_get_text(GTK_ENTRY((char*)data));
     printf("\n%s", carRegistration);
 
-    if(strlen(carRegistration) != 7){
+    if(strlen(carRegistration) != 9){
         messageErrorCar();
     }
 

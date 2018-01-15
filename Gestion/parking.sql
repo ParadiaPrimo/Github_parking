@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  127.0.0.1
--- Généré le :  Sam 13 Janvier 2018 à 00:40
+-- Généré le :  Lun 15 Janvier 2018 à 15:11
 -- Version du serveur :  5.7.14
 -- Version de PHP :  5.6.25
 
@@ -31,7 +31,7 @@ CREATE TABLE `cb` (
   `id_proprio` int(11) NOT NULL,
   `code_bancaire` char(16) NOT NULL,
   `crypto` char(3) NOT NULL,
-  `date_expi` date NOT NULL
+  `date_expi` char(10) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -39,7 +39,8 @@ CREATE TABLE `cb` (
 --
 
 INSERT INTO `cb` (`id_cb`, `id_proprio`, `code_bancaire`, `crypto`, `date_expi`) VALUES
-(1, 1, '1111222233334444', '222', '2019-06-25');
+(1, 1, '1111222233334444', '222', '2021-05-12'),
+(12, 2, '1234123412341234', '525', '2020-12-01');
 
 -- --------------------------------------------------------
 
@@ -63,7 +64,9 @@ CREATE TABLE `proprietaire` (
 INSERT INTO `proprietaire` (`id_proprio`, `nom`, `prenom`, `password`, `mail`, `abonnement`) VALUES
 (1, 'Ky', 'Stephane', 'plop', 'sky050577@gmail.com', 2),
 (2, 'sdddf', 'psdlfpl', 'dpfl', 'sdfsdf', 0),
-(0, 'dummy', 'dummy', '', '', -1);
+(0, 'dummy', 'dummy', '', '', -1),
+(5, 'plop', 'plop', 'plop@nani.fr', 'plop', 0),
+(6, '0', 'hgfds', 'ffffff', 'dfdfdf', 0);
 
 -- --------------------------------------------------------
 
@@ -74,12 +77,12 @@ INSERT INTO `proprietaire` (`id_proprio`, `nom`, `prenom`, `password`, `mail`, `
 CREATE TABLE `reservation` (
   `id_reservation` int(11) NOT NULL,
   `id_voiture` int(11) NOT NULL,
-  `date_prevue_start` datetime NOT NULL,
-  `date_prevue_end` datetime NOT NULL,
-  `date_true start` datetime DEFAULT NULL,
-  `date_true_end` datetime DEFAULT NULL,
-  `lavage_ext` int(11) NOT NULL DEFAULT '0',
+  `date_prevue_start` char(20) NOT NULL,
+  `date_prevue_end` char(20) NOT NULL,
+  `date_true_start` char(20) DEFAULT NULL,
+  `date_true_end` char(20) DEFAULT NULL,
   `lavage_int` int(11) NOT NULL DEFAULT '0',
+  `lavage_ext` int(11) NOT NULL DEFAULT '0',
   `lavage_total` int(11) NOT NULL DEFAULT '0',
   `essence` int(11) NOT NULL DEFAULT '0',
   `actif` int(11) NOT NULL DEFAULT '0',
@@ -91,8 +94,9 @@ CREATE TABLE `reservation` (
 -- Contenu de la table `reservation`
 --
 
-INSERT INTO `reservation` (`id_reservation`, `id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true start`, `date_true_end`, `lavage_ext`, `lavage_int`, `lavage_total`, `essence`, `actif`, `fini`, `paye`) VALUES
-(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-02 04:19:35', 0, 0, 0, 16, 1, 1, 0);
+INSERT INTO `reservation` (`id_reservation`, `id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true_start`, `date_true_end`, `lavage_int`, `lavage_ext`, `lavage_total`, `essence`, `actif`, `fini`, `paye`) VALUES
+(1, 4, '2017-12-31 00:00:00', '2018-01-02 00:00:00', '2018-01-01 05:00:00', '2018-01-02 04:19:35', 0, 0, 0, 16, 1, 1, 1),
+(4, 1, '2018-01-15 00:00:00', '2018-01-18 00:00:00', '2018-01-15 15:21:41', '2018-01-15 16:06:46', 0, 1, 0, 60, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -113,9 +117,9 @@ CREATE TABLE `voiture` (
 
 INSERT INTO `voiture` (`id_voiture`, `id_proprio`, `plaque_immatriculation`, `etat`) VALUES
 (1, 1, 'EL 110 AM', 0),
-(2, 1, '65 CKL 77', 1),
+(2, 1, '65 CKL 77', 0),
 (3, 1, 'EL 220 EM', 0),
-(4, 1, 'BATMOBILE!', 1);
+(4, 1, 'BATMOBILE!', 0);
 
 --
 -- Index pour les tables exportées
@@ -154,17 +158,17 @@ ALTER TABLE `voiture`
 -- AUTO_INCREMENT pour la table `cb`
 --
 ALTER TABLE `cb`
-  MODIFY `id_cb` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_cb` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- AUTO_INCREMENT pour la table `proprietaire`
 --
 ALTER TABLE `proprietaire`
-  MODIFY `id_proprio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_proprio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT pour la table `reservation`
 --
 ALTER TABLE `reservation`
-  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_reservation` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `voiture`
 --

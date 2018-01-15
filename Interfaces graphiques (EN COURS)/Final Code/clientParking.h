@@ -3,7 +3,7 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
 int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_year,int start_hour,int start_min,int end_day,int end_month,int end_year,int end_hour,int end_min, int fuel,int cleaning,char *car_id);
 int activate_booking(MYSQL *mysql,char *car_id);
 int end_booking(MYSQL *mysql,char *car_id);
-
+int client_subscribe(MYSQL *mysql,char* car_id,int sub);
 
 typedef struct cb_user
 {
@@ -141,7 +141,7 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
     if(flag==0)
     {
         printf("ERROR : The car isn't registered\n");
-        return 99;
+        return 1;
     }
 
     sprintf(request,"SELECT * FROM reservation");
@@ -334,6 +334,42 @@ int end_booking(MYSQL *mysql,char *car_id)
 	mysql_query(mysql,request);
 
 	sprintf(request,"UPDATE voiture SET etat =0 WHERE id_voiture = %s;",id_voiture);
+	mysql_query(mysql,request);
+
+    return 0;
+
+}
+
+int client_subscribe(MYSQL *mysql,char* car_id,int sub)
+{
+    int flag = 0;
+    MYSQL_RES *result = NULL;
+    MYSQL_ROW row;
+
+    char id_proprio[2];
+    char request[1000];
+
+    sprintf(request,"SELECT * FROM proprietaire");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[4],car_id) == 0)
+            {
+                strcpy(id_proprio,row[0]);
+                flag = 1;
+                break;
+            }
+    }
+    mysql_free_result(result);
+
+    if(flag == 0)
+    {
+        printf("ERROR : Account not found\n");
+        return 99;
+    }
+
+    sprintf(request,"UPDATE proprietaire SET abonnement = %d WHERE id_proprio = %s;",sub,id_proprio);
 	mysql_query(mysql,request);
 
     return 0;

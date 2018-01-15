@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <winsock.h>
-#include <mysql.h>
+#include <MYSQL/mysql.h>
 #include <winsock2.h>
 #include "clientParking.h"
 #include "popup.h"
@@ -529,7 +529,7 @@ int main(int argc, char **argv){
 
     gtk_table_attach(GTK_TABLE(boxArray), subBox3[4], 11, 12, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
 
-    textLabel = gtk_label_new("Enter your car registration");
+    textLabel = gtk_label_new("Enter your mail");
     getValue[1] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(boxArray), textLabel, 13, 14, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
     gtk_table_attach(GTK_TABLE(boxArray), getValue[1], 14, 15, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
@@ -806,13 +806,30 @@ static void grabSubscriptionData(GtkWidget *widget, gpointer data){
     subscriptionNumber = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0])); //SUBSCRIPTION NUMBER
     printf("Subscription number: %d\n", subscriptionNumber);
     carId = gtk_entry_get_text(GTK_ENTRY(value[1])); //CVC CRYPTOGRAM
-    printf("Car number plate: %s\n", carId);
+    printf("mail : %s\n", carId);
 
-    if(strlen(carId) != 7){
-        messageErrorCar();
-    }else{
-        messageSubscriptionChosen();
-    }
+        int error;
+        MYSQL *mysql;
+        mysql = mysql_init(NULL);
+        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+
+        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
+        {
+            error = client_subscribe(mysql,carId,subscriptionNumber);
+            mysql_close(mysql);
+            if(error == 0)
+            {
+                printf("sub updated\n");
+                messageSuccessSubscribeChange();
+            }
+            else
+            {
+                messageAccountNotFound();
+            }
+        }
+        else {
+            messageErrorConnection();
+        }
 
 }
 /*int toggledFunction(GtkWidget *widget, gpointer data){
@@ -936,7 +953,7 @@ static void grabPaymentData(GtkWidget *widget, gpointer data){
             }
             else
             {
-                printf("NOPE\n");
+                messageAccountNotFound();
             }
         }
         else {
@@ -1022,11 +1039,16 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
                             if(error == 0)
                             {
                                 printf("booking added\n");
-                                messageSuccessPayment();
+                                messageSuccessReservation();
                             }
-                            else
+                            else if(error == 1)
                             {
                                 printf("NOPE\n");
+                                messageErrorCar();
+                            }
+                            else if(error == 2)
+                            {
+                                messageBookingAlreadyExist();
                             }
                         }
                         else {
@@ -1088,17 +1110,17 @@ static void grabCarIdEntryParking(GtkWidget *widget, gpointer data){
             if(error == 0)
             {
                 printf("Booking start !\n");
-                messageSuccessPayment();
+
+                messageEnterParking();
             }
             else
             {
-                printf("NOPE\n");
+                messageBookingNotCreated();
             }
         }
         else {
             messageErrorConnection();
         }
-        messageEnterParking();
     }
 
 }
@@ -1127,8 +1149,7 @@ static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data){
             {
                 printf("Booking end !\n");
                 facture_check(mysql,carRegistration);
-                printf("PAIMEMEMEMEMEME\n");
-                messageSuccessPayment();
+                messageLeavingParking();
             }
             else
             {
@@ -1139,7 +1160,6 @@ static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data){
         else {
             messageErrorConnection();
         }
-        messageLeavingParking();
     }
 
 }

@@ -2510,7 +2510,7 @@
 	"popup.h"
 	"facture.h"
 
-1515943300 source:d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\main.c
+1516049591 source:d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\main.c
 	<gtk/gtk.h>
 	<stdlib.h>
 	<string.h>
@@ -2520,14 +2520,15 @@
 	<winsock2.h>
 	"clientParking.h"
 	"popup.h"
+	"facture.h"
 
-1515943296 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
+1516049798 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
 
 1516032897 c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\clientparking.h
 
 1515983564 c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\popup.h
 
-1515943296 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\popup.h
+1516034663 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\popup.h
 
 1341006776 c:\program files (x86)\codeblocks\mingw\include\stdlib.h
 	<_mingw.h>
@@ -2767,4 +2768,6 @@
 1130013324 c:\program files (x86)\codeblocks\mingw\include\my_alloc.h
 
 1516032897 c:\users\toboggan\desktop\2nd année - esgi\langage c\projet\github_parking\interfaces graphiques (en cours)\final code\facture.h
+
+1516028763 d:\dossier de stephane\cours\2i\langage c\projetparking\github_parking\interfaces graphiques (en cours)\final code\facture.h
 

@@ -2,7 +2,10 @@ static void messageError();
 static void messageErrorCar();
 static void messageSuccessAccountCreation();
 static void messageAccountAlreadyExist();
+static void messageBookingAlreadyExist();
 static void messageAccountNotCreated();
+static void messageBookingNotCreated();
+static void messageAccountNotFound();
 static void messageSuccessCancelled();
 static void messageSuccessPayment();
 static void messageErrorPassword();
@@ -12,7 +15,7 @@ static void messageSubscriptionChosen();
 static void messageEnterParking();
 static void messageLeavingParking();
 static void messageSuccessReservation();
-static void messageCancelledReservation();
+static void messageSuccessSubscribeChange();
 
 //ALL MESSAGE DIALOG POP UP
 static void messageError(){
@@ -22,7 +25,7 @@ static void messageError(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The specified date is wrong.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The specified date is wrong");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -35,7 +38,7 @@ static void messageErrorCar(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The car number plate is invalid or doesn't exist.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The car number plate is invalid or doesn't exist");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -48,7 +51,7 @@ static void messageSuccessAccountCreation(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Account created\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account has been successfully created.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account has been successfully created");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -59,8 +62,20 @@ static void messageAccountAlreadyExist(){
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Invalid account\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "An account already exist.");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Error\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "An account already exist");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy (dialog);
+
+}
+static void messageBookingAlreadyExist(){
+
+  GtkWidget *dialog;
+  GtkWidget *window;
+  window = gtk_window_new(GTK_WINDOW_POPUP);
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Error\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Another booking is already registered");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -72,7 +87,31 @@ static void messageAccountNotCreated(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account cannot be created, please contact an administrator.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account cannot be created, please contact an administrator");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy (dialog);
+
+}
+static void messageBookingNotCreated(){
+
+  GtkWidget *dialog;
+  GtkWidget *window;
+  window = gtk_window_new(GTK_WINDOW_POPUP);
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Error\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your booking cannot be found, please contact an administrator");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy (dialog);
+
+}
+static void messageAccountNotFound(){
+
+  GtkWidget *dialog;
+  GtkWidget *window;
+  window = gtk_window_new(GTK_WINDOW_POPUP);
+
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Error\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account cannot be found, please contact an administrator");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -84,7 +123,7 @@ static void messageSuccessCancelled(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Cancelled!\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your book has been cancelled successfully.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your book has been cancelled successfully!");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -95,8 +134,8 @@ static void messageSuccessPayment(){
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Payment registered!\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your bank account is successfully registered.");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Payment accepted\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your bank account is successfully registered");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -109,7 +148,7 @@ static void messageErrorPassword(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Warning\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your password is incorrect.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your password is incorrect");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -121,7 +160,7 @@ static void messageErrorConnection(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Warning\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Connection failed.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Connection failed");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -133,7 +172,7 @@ static void messageErrorInvalidCC(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Error\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The specified card number is invalid.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "The specified card number is invalid");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -144,7 +183,7 @@ static void messageSubscriptionChosen(){
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Thank you!\n");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Thank you!\n");
   gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "Your choice has been registered.");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
@@ -156,7 +195,7 @@ static void messageEnterParking(){
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Welcome!\n");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Welcome!\n");
   gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "Your car has been parked successfully.");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
@@ -168,8 +207,8 @@ static void messageLeavingParking(){
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Goodbye!\n");
-  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "You are leaving the parking.");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Goodbye!\n");
+  gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG (dialog), "You are leaving the parking. Please don't forget your bill .");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
@@ -181,21 +220,21 @@ static void messageSuccessReservation(){
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
   dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Reservation completed!\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your reservation has been considered.");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your booking has been created.");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
 }
-static void messageCancelledReservation(){
+
+static void messageSuccessSubscribeChange(){
 
   GtkWidget *dialog;
   GtkWidget *window;
   window = gtk_window_new(GTK_WINDOW_POPUP);
 
-  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Reservation cancelled!\n");
-  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your reservation has been cancelled successfully.");
+  dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_OTHER, GTK_BUTTONS_OK, "Reservation completed!\n");
+  gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), "Your account has been successfully updated");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy (dialog);
 
 }
-

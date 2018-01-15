@@ -36,6 +36,7 @@ typedef struct Bonus_price
 
 void facture_check(MYSQL *mysql,char *plate)
 {
+    int flag =0;
     Info user;
     Date booking;
     Bonus_price price;
@@ -46,7 +47,7 @@ void facture_check(MYSQL *mysql,char *plate)
     long date_real_two = 0;
     long hour_one = 0;
     long hour_two = 0;
-
+    char id_user_tempo[2];
 
     char tempo[8];
     char tempo2[4];
@@ -57,34 +58,62 @@ void facture_check(MYSQL *mysql,char *plate)
     strcpy(user.plate,plate);
 
     /**Récupération de toute les info de l'utilisateur**/
-    sprintf(request,"SELECT id_voiture,id_proprio FROM voiture WHERE plaque_immatriculation='%s' AND etat = 1",user.plate);
-    mysql_query(mysql,request);
-    result = mysql_use_result(mysql);
-    row = mysql_fetch_row(result);
-    if(row!=NULL)
+    sprintf(request,"SELECT * FROM voiture");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
     {
-        user.id_car=atoi(row[0]);
-        user.id_user = atoi(row[1]);
+        if(strcmp(row[2],user.plate) == 0 && strcmp(row[3],"0")==0)
+            {
+                user.id_car=atoi(row[0]);
+                user.id_user = atoi(row[1]);
+                strcpy(id_user_tempo,row[1]);
+                flag++;
+printf("1\n");
+                break;
+            }
     }
     mysql_free_result(result);
 
-    sprintf(request,"SELECT nom,prenom,abonnement FROM proprietaire WHERE id_proprio=%d",user.id_user);
-    mysql_query(mysql,request);
-    result = mysql_use_result(mysql);
-    row = mysql_fetch_row(result);
-    if(row!=NULL)
-    strcpy(user.name,row[0]);
-    strcpy(user.surname,row[1]);
-    user.subscribe = atoi(row[2]);
+    sprintf(request,"SELECT * FROM proprietaire");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[0],id_user_tempo)==0)
+            {
+                strcpy(user.name,row[1]);
+                strcpy(user.surname,row[2]);
+                user.subscribe = atoi(row[5]);
+                flag++;
+
+printf("2\n");
+                break;
+            }
+    }
     mysql_free_result(result);
 
-    sprintf(request,"SELECT code_bancaire FROM cb WHERE id_proprio='%d'",user.id_user);
-    mysql_query(mysql,request);
-    result = mysql_use_result(mysql);
-    row = mysql_fetch_row(result);
-    strcpy(user.bank,row[0]);
+    sprintf(request,"SELECT * FROM cb");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[1],id_user_tempo)==0)
+            {
+                strcpy(user.bank,row[2]);
+                flag++;
+
+printf("3\n");
+                break;
+            }
+    }
     mysql_free_result(result);
 
+    if (flag!=3)
+    {
+        printf("ERROR : erreuuuuur de paiement\n");
+        return;
+    }
 
 
     sprintf(request,"SELECT * FROM reservation WHERE id_voiture = '%d' AND fini = 1 AND paye = 0",user.id_car);
@@ -102,7 +131,7 @@ void facture_check(MYSQL *mysql,char *plate)
     price.cleaning_both = atoi(row[8]);
     price.fuel = atof(row[9]);
 
-
+printf("4\n");
 
     /**booking time**/
     sprintf(tempo,"%c%c%c%c%c%c%c%c",booking.initial_date[0],booking.initial_date[1],booking.initial_date[2],booking.initial_date[3],

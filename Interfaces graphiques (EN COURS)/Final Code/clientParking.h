@@ -262,3 +262,75 @@ int activate_booking(MYSQL *mysql,char *car_id)
 	mysql_query(mysql,request);
     return 0;
 }
+
+int end_booking(MYSQL *mysql,char *car_id)
+{
+    int flag=0;
+    char id_voiture[2];
+    char id_booking[2];
+    char inactive[2]="0";
+    char current_date[20];
+
+    MYSQL_RES *result = NULL;
+    MYSQL_ROW row;
+
+    char request[1000];
+
+    sprintf(request,"SELECT * FROM voiture");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[2],car_id) == 0)
+            {
+                strcpy(id_voiture,row[0]);
+                break;
+            }
+    }
+    mysql_free_result(result);
+
+
+    sprintf(request,"SELECT * FROM reservation");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[1],id_voiture)==0 && strcmp(row[11],inactive)==0)
+            {
+                printf("plop\n");
+                strcpy(id_booking,row[0]);
+                flag = 1;
+                break;
+            }
+    }
+    mysql_free_result(result);
+
+    printf("car plate : %s\n",car_id);
+    printf("voiturururururur : %s\n",id_voiture);
+    printf("reservationininiin : %s\n",id_booking);
+
+    if(flag == 0)
+    {
+        printf("ERROR : No booking taken \n ");
+        return 99;
+    }
+
+
+    sprintf(request,"SELECT NOW()");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    row = mysql_fetch_row(result);
+    strcpy(current_date,row[0]);
+    mysql_free_result(result);
+
+    printf("date auj : %s\n",current_date);
+    printf("id_voiture : %s\n",id_voiture);
+    printf("id_booking : %s\n",id_booking);
+
+    sprintf(request,"UPDATE reservation SET date_true_end ='%s',fini = 1 WHERE id_reservation = %s;",current_date,id_booking);
+    printf("%s\n",request);
+	mysql_query(mysql,request);
+
+
+    return 0;
+}

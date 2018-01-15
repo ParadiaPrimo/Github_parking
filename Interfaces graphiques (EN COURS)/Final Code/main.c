@@ -7,6 +7,7 @@
 #include <winsock2.h>
 #include "clientParking.h"
 #include "popup.h"
+#include "facture.h"
 
 enum {
     TEXT_COLUMN,
@@ -1112,6 +1113,32 @@ static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data){
         messageErrorCar();
 
     }else{
+         int error;
+        MYSQL *mysql;
+        char request[1000];
+        mysql = mysql_init(NULL);
+        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
+
+        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
+        {   printf("bdd connection ok\n");
+            error = end_booking(mysql,carRegistration);
+
+            if(error == 0)
+            {
+                printf("Booking end !\n");
+                facture_check(mysql,carRegistration);
+                printf("PAIMEMEMEMEMEME\n");
+                messageSuccessPayment();
+            }
+            else
+            {
+                printf("NOPE\n");
+            }
+            mysql_close(mysql);
+        }
+        else {
+            messageErrorConnection();
+        }
         messageLeavingParking();
     }
 

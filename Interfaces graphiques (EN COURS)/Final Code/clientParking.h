@@ -14,10 +14,18 @@ typedef struct cb_user
     char char_month_expi[2];
     char char_year_expi[4];
 } cb_user;
+typedef struct InfoBooking{
 
+    char name;
+    char surname;
+    char dateEnter;
+    char dateLeaving;
+    int carWashOutside;
+    int carWashOutside;
+    int carWashTotal;
+    int fuel;
 
-
-
+}InfoBooking;
 
 int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 {
@@ -33,7 +41,8 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
     {
         if(strcmp(row[4],mail) == 0)
             {
-                printf("ERROR : The account already exist\n");
+                messageAccountAlreadyExist();
+                printf("Account already exist\n");
                 return 99;
             }
     }
@@ -49,11 +58,13 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
         if(strcmp(row[4],mail) == 0)
             {
                 printf("Account successfully created\n");
+                messageSuccessAccountCreation();
                 return 0;
             }
     }
 
     printf("ERROR : The account cannot be created\n");
+    messageAccountNotCreated();
     return 1;
 	mysql_free_result(result);
 }
@@ -88,6 +99,7 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
     if(flag==0);
     {
         printf("ERROR : the account doesn't exist\n");
+        messageAccountNotFound();
         return 99;
     }
         sprintf(user_info.expi,"%c%c%c%c-%c%c-01",expiration[2],expiration[3],expiration[4],expiration[5],expiration[0],expiration[1]);
@@ -141,6 +153,7 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
     if(flag==0)
     {
         printf("ERROR : The car isn't registered\n");
+
         return 1;
     }
 
@@ -154,6 +167,7 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
                 if(row[9]==0 || row[10]==0)
                 {
                     printf("ERROR : already a booking active \n");
+                    messageBookingAlreadyActive();
                     return 2;
                 }
             }
@@ -366,6 +380,7 @@ int client_subscribe(MYSQL *mysql,char* car_id,int sub)
     if(flag == 0)
     {
         printf("ERROR : Account not found\n");
+        messageAccountNotFound();
         return 99;
     }
 
@@ -374,3 +389,7 @@ int client_subscribe(MYSQL *mysql,char* car_id,int sub)
 
     return 0;
 }
+/*void searchInformation(InfoBooking *info){
+
+
+}*/

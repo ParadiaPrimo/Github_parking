@@ -4,6 +4,7 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
 int activate_booking(MYSQL *mysql,char *car_id);
 int end_booking(MYSQL *mysql,char *car_id);
 int client_subscribe(MYSQL *mysql,char* car_id,int sub);
+Info_booking get_info(MYSQL* mysql,char * car_id);
 
 typedef struct cb_user
 {
@@ -13,19 +14,21 @@ typedef struct cb_user
     int year_expi;
     char char_month_expi[2];
     char char_year_expi[4];
+
 } cb_user;
-typedef struct InfoBooking{
 
-    char name;
-    char surname;
-    char dateEnter;
-    char dateLeaving;
-    int carWashOutside;
-    int carWashOutside;
-    int carWashTotal;
-    int fuel;
+typedef struct Info_booking
+{
+    char name[80];
+    char surname[80];
+    char car_id[2];
+    char proprio[2];
+    char id_reserv[2];
+    char start_reserv[20];
+    char end_reserv[20];
 
-}InfoBooking;
+} Info_booking;
+
 
 int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 {
@@ -41,8 +44,7 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
     {
         if(strcmp(row[4],mail) == 0)
             {
-                messageAccountAlreadyExist();
-                printf("Account already exist\n");
+                printf("ERROR : The account already exist\n");
                 return 99;
             }
     }
@@ -58,13 +60,11 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
         if(strcmp(row[4],mail) == 0)
             {
                 printf("Account successfully created\n");
-                messageSuccessAccountCreation();
                 return 0;
             }
     }
 
     printf("ERROR : The account cannot be created\n");
-    messageAccountNotCreated();
     return 1;
 	mysql_free_result(result);
 }
@@ -99,7 +99,6 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
     if(flag==0);
     {
         printf("ERROR : the account doesn't exist\n");
-        messageAccountNotFound();
         return 99;
     }
         sprintf(user_info.expi,"%c%c%c%c-%c%c-01",expiration[2],expiration[3],expiration[4],expiration[5],expiration[0],expiration[1]);
@@ -153,8 +152,7 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
     if(flag==0)
     {
         printf("ERROR : The car isn't registered\n");
-
-        return 1;
+        return 99;
     }
 
     sprintf(request,"SELECT * FROM reservation");
@@ -167,7 +165,6 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
                 if(row[9]==0 || row[10]==0)
                 {
                     printf("ERROR : already a booking active \n");
-                    messageBookingAlreadyActive();
                     return 2;
                 }
             }
@@ -351,45 +348,132 @@ int end_booking(MYSQL *mysql,char *car_id)
 	mysql_query(mysql,request);
 
     return 0;
-
 }
 
 int client_subscribe(MYSQL *mysql,char* car_id,int sub)
 {
-    int flag = 0;
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;
 
     char id_proprio[2];
     char request[1000];
 
-    sprintf(request,"SELECT * FROM proprietaire");
+    sprintf(request,"SELECT * FROM voiture");
 	mysql_query(mysql,request);
 	result = mysql_use_result(mysql);
     while ((row = mysql_fetch_row(result)))
     {
-        if(strcmp(row[4],car_id) == 0)
+        if(strcmp(row[2],car_id) == 0)
             {
-                strcpy(id_proprio,row[0]);
-                flag = 1;
+                strcpy(id_proprio,row[1]);
                 break;
             }
     }
     mysql_free_result(result);
 
-    if(flag == 0)
-    {
-        printf("ERROR : Account not found\n");
-        messageAccountNotFound();
-        return 99;
-    }
-
-    sprintf(request,"UPDATE proprietaire SET abonnement = %d WHERE id_proprio = %s;",sub,id_proprio);
+    sprintf(request,"UPDATE proprietaire SET abonnement =%s WHERE id_proprio = %s;",sub,id_proprio);
 	mysql_query(mysql,request);
 
     return 0;
 }
-/*void searchInformation(InfoBooking *info){
 
 
-}*/
+Info_booking get_info(MYSQL* mysql,char * car_id)
+{
+    Info_booking user_info;
+
+    MYSQL_RES *result = NULL;
+    MYSQL_ROW row;
+
+    int flag=0;
+    char request[1000];
+
+    sprintf(request,"SELECT * FROM voiture");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[2],car_id) == 0)
+            {
+                strcpy(user_info.car_id,row[0]);
+                strcpy(user_info.proprio,row[1]);
+                break;
+            }
+    }
+    mysql_free_result(result);
+
+    sprintf(request,"SELECT * FROM proprietaire");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[0],user_info.proprio) == 0 )
+            {
+                strcpy(user_info.name,row[1]);
+                strcpy(user_info.surname,row[2]);
+                flag++;
+                break;
+            }
+    }
+    mysql_free_result(result);
+
+    sprintf(request,"SELECT * FROM reservation");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[1],user_info.car_id) == 0 && strcmp(row[12],"0")==0)
+            {
+                strcpy(user_info.start_reserv,row[2]);
+                strcpy(user_info.end_reserv,row[3]);
+                strcpy(user_info.id_reserv,row[0]);
+                flag++;
+                break;
+            }
+    }
+    mysql_free_result(result);
+
+    if(flag==2)
+    {
+     return user_info;
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+
+int cancel_booking(MYSQL *mysql,Info_booking *user_info)
+{
+    MYSQL_RES *result = NULL;
+    MYSQL_ROW row;
+
+    char id_proprio[2];
+    char request[1000];
+
+    sprintf(request,"SELECT * FROM reservation");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[0],user_info.id_reserv) == 0)
+            {
+                if(strcpy(row[10],"1")|| strcpy(row[11],"1"))
+                {
+                    return 99;
+                }
+                else
+                {
+                    sprintf(request,"UPDATE reservation SET actif = -1,fini = -1, paye = -1 WHERE id_reservation = %s;",user_info.id_reserv);
+                    mysql_query(mysql,request);
+                     mysql_free_result(result);
+                    return 0;
+                }
+            }
+    }
+    return 99;
+}
+
+
+

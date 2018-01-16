@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <winsock.h>
-#include <mysql.h>
+#include <MYSQL/mysql.h>
 #include <winsock2.h>
 #include "clientParking.h"
 #include "popup.h"
@@ -24,7 +24,6 @@ static void grabCarIdEntryParking(GtkWidget *widget, gpointer data);
 static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data);
 static void grabEntryData(GtkWidget *widget, gpointer data);
 static void bookCancelled(GtkWidget *widget);
-static void destroySubWindow(GtkWidget *widget, gpointer data);
 //int toggledFunction(GtkWidget *widget, gpointer data);
 
 int main(int argc, char **argv){
@@ -48,12 +47,10 @@ int main(int argc, char **argv){
     gchar *text;
     //FORM
     GtkWidget *formArray;
-    GtkWidget *tableButton;
     GtkWidget *formName[4];
     GtkEntry *formText[4] = {0};
     //BUTTON
     GtkWidget *validButton;
-    GtkWidget *quitButton;
 
     gint i = 0;
 
@@ -99,7 +96,7 @@ int main(int argc, char **argv){
 
 
     textLabel = gtk_label_new("\tIf you are interesting by a parking spot in Paris, PARK'CAR allows you to park your car safely.\n"
-                              "To book a parking space you have to:\n\t- Create an account\n\t- Click on 'Book your parking space' and follow instructions"
+                              "To book a parking space you have to:\n\t- Click on 'Book your parking space' and follow instructions"
                               "\n\t- Click on 'Payment' to add your credit card\n"
                               "PARK'CAR propose different subscriptions and prices for our customers. For that purpose, click on 'Offers & Subscriptions' for check all our services."
                               "\n\nYou can check your reservation, if you want to check it, you have to indicate your car numberplate\n"
@@ -110,18 +107,11 @@ int main(int argc, char **argv){
     gtk_box_pack_start(GTK_BOX(subvBoxb), textLabel, FALSE, FALSE, 40);
     headerTitle = g_locale_from_utf8("\n\n<b><big>Let's get started!</big></b>\n\n", -1, NULL, NULL, NULL);
 
-
-
     headerTitleLabel = gtk_label_new(headerTitle);
 
     gtk_label_set_use_markup(GTK_LABEL(headerTitleLabel), TRUE);
     gtk_label_set_justify(GTK_LABEL(headerTitleLabel), GTK_JUSTIFY_CENTER);
     gtk_box_pack_start(GTK_BOX(subvBoxb), headerTitleLabel, FALSE, FALSE, 0);
-    tableButton = gtk_table_new(5, 5, FALSE);
-    gtk_box_pack_start(GTK_BOX(subvBoxb), tableButton, FALSE, FALSE, 30);
-    quitButton = gtk_button_new_from_stock(GTK_STOCK_QUIT);
-    gtk_table_attach(tableButton, quitButton, 4, 5, 1, 2, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 50, 0);
-    g_signal_connect(quitButton, "clicked", G_CALLBACK(gtk_main_quit), NULL);
 
     sTabLabel = g_strdup_printf("Home");
     pTabLabel = gtk_label_new(sTabLabel);
@@ -477,7 +467,7 @@ int main(int argc, char **argv){
         subBox3[i] = gtk_vbox_new(FALSE, 15);
     }
 
-    subTitle[0] = g_locale_from_utf8("\n<span>Classic (Default)</span>\n\n<span>29,99 euros</span><sup>   per month</sup>\n"
+    subTitle[0] = g_locale_from_utf8("\n<span>Classic</span>\n\n<span>29,99 euros</span><sup>   per month</sup>\n"
                                      "\n\n\n\n<span>With this subscription, you can:\n\n Park your car (3 euros /hour)\nCar wash \n\tInside: 20 euros\n\tOutsite: 25 euros\n\tBoth: 35 euros\nFilling up the gas tank (1,20 /L)</span>", -1, NULL, NULL, NULL);
     subTitleLabel[0] = gtk_label_new(subTitle[0]);
     gtk_label_set_use_markup(GTK_LABEL(subTitleLabel[0]), TRUE);
@@ -507,7 +497,7 @@ int main(int argc, char **argv){
     //GtkWidget *radio1, *radio2, *radio3;
 
     int subValue; //THE SUSBCRIPTION NUMBER
-    subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you\nAnd indicate your car numberplate.\n0 - Classic (Default)\n1- Premium\n2- Premium Plus</span>", -1, NULL, NULL, NULL);
+    subTitle[3] = g_locale_from_utf8("\n<span>Choose the subscription that works for you\nAnd indicate your car numberplate.\n1 - Classic\n2- Premium\n3- Premium Plus</span>", -1, NULL, NULL, NULL);
     subTitleLabel[3] = gtk_label_new(subTitle[3]);
     gtk_label_set_use_markup(GTK_LABEL(subTitleLabel[3]), TRUE);
     gtk_label_set_justify(GTK_LABEL(subTitleLabel[3]), GTK_JUSTIFY_LEFT);
@@ -531,7 +521,7 @@ int main(int argc, char **argv){
     gtk_misc_set_alignment(GTK_MISC (textLabel), 0, 0.5);
     gtk_box_pack_start (GTK_BOX (subBox3[4]), textLabel, FALSE, FALSE, 10);
 
-    adj = (GtkAdjustment *)gtk_adjustment_new(0.0, 0.0, 2.0, 1.0, 5.0, 0.0);
+    adj = (GtkAdjustment *)gtk_adjustment_new(1.0, 0.0, 3.0, 1.0, 5.0, 0.0);
     getValue[0] = gtk_spin_button_new(adj, 1.0, 0);
 
     gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(getValue[0]), TRUE);
@@ -539,7 +529,7 @@ int main(int argc, char **argv){
 
     gtk_table_attach(GTK_TABLE(boxArray), subBox3[4], 11, 12, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
 
-    textLabel = gtk_label_new("Enter your mail");
+    textLabel = gtk_label_new("Enter your car registration");
     getValue[1] = gtk_entry_new();
     gtk_table_attach(GTK_TABLE(boxArray), textLabel, 13, 14, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
     gtk_table_attach(GTK_TABLE(boxArray), getValue[1], 14, 15, 0, 1, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 30, 10);
@@ -717,10 +707,10 @@ int main(int argc, char **argv){
 
     gtk_box_pack_start(GTK_BOX(subvBox5b), labelText, FALSE, FALSE, 30);
     formArray = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(subvBox5b), formArray, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(subvBox5b), formArray, FALSE, FALSE, 10);
 
     validButton = gtk_button_new_with_label("I valid");
-
+    g_signal_connect(validButton, "clicked", G_CALLBACK(grabCarId), formArray);
     gtk_box_pack_start(GTK_BOX(subvBox5b), validButton, FALSE, FALSE, 0);
 
     g_signal_connect(validButton, "clicked", G_CALLBACK(grabEntryData), formArray);
@@ -816,30 +806,13 @@ static void grabSubscriptionData(GtkWidget *widget, gpointer data){
     subscriptionNumber = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(value[0])); //SUBSCRIPTION NUMBER
     printf("Subscription number: %d\n", subscriptionNumber);
     carId = gtk_entry_get_text(GTK_ENTRY(value[1])); //CVC CRYPTOGRAM
-    printf("mail : %s\n", carId);
+    printf("Car number plate: %s\n", carId);
 
-        int error;
-        MYSQL *mysql;
-        mysql = mysql_init(NULL);
-        mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, "option");
-
-        if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
-        {
-            error = client_subscribe(mysql,carId,subscriptionNumber);
-            mysql_close(mysql);
-            if(error == 0)
-            {
-                printf("sub updated\n");
-                messageSuccessSubscribeChange();
-            }
-            else
-            {
-                messageAccountNotFound();
-            }
-        }
-        else {
-            messageErrorConnection();
-        }
+    if(strlen(carId) != 7){
+        messageErrorCar();
+    }else{
+        messageSubscriptionChosen();
+    }
 
 }
 /*int toggledFunction(GtkWidget *widget, gpointer data){
@@ -903,7 +876,7 @@ static void grabRegistrationFormData(GtkWidget *widget, gpointer data, char *nam
         if(mysql_real_connect(mysql, "127.0.0.1", "root","", "Parking", 0, NULL, 0))
         {
             //messageSuccess();
-            error = client_sign_in(mysql,name,surname,password,email);
+            error = client_sign_in(mysql,name,surname,email,password);
             mysql_close(mysql);
             if(error == 0)
             {
@@ -963,7 +936,7 @@ static void grabPaymentData(GtkWidget *widget, gpointer data){
             }
             else
             {
-                messageAccountNotFound();
+                printf("NOPE\n");
             }
         }
         else {
@@ -1020,10 +993,10 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
     printf("\n\nTO:\nDay: %d\nMonth: %d\nYear: %d\nAt %d:%d", information[5], information[6], information[7], information[8], information[9]);
     carId = gtk_entry_get_text(GTK_ENTRY((char*)value[12]));
     printf("\n%s", carId);
-    /*if(strlen(carId) != 9){
+    if(strlen(carId) != 9){
         messageErrorCar();
 
-    }*/
+    }
 
     /** CHECK IF ERROR **/
     if(information[2] <= information[7]){ //IF YEAR <= YEAR2
@@ -1032,9 +1005,9 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
             printf("\nMonth OK");
             if(information[0] <= information[5]){ //IF DAY <= DAY2
                 printf("\nDay OK");
-                if(information[3] < information[8]||(information[0] < information[5]||information[1] < information[6]||information[2] < information[7])){ //IF HOUR <= HOUR2
+                if(information[3] <= information[8]||(information[0] < information[5]||information[1] < information[6]||information[2] < information[7])){ //IF HOUR <= HOUR2
                     printf("\nHour OK");
-                    if(information[4] < information[9]||(information[0] < information[5]||information[1] < information[6]||information[2] < information[7])){ //IF MINUTE <= MINUTE2
+                    if(information[4] <= information[9]||(information[0] < information[5]||information[1] < information[6]||information[2] < information[7])){ //IF MINUTE <= MINUTE2
                         printf("\nMinute OK\nDONE!");
                         int error;
                         MYSQL *mysql;
@@ -1049,16 +1022,11 @@ static void grabReservationData(GtkWidget *spinner, gpointer data){
                             if(error == 0)
                             {
                                 printf("booking added\n");
-                                messageSuccessReservation();
+                                messageSuccessPayment();
                             }
-                            else if(error == 1)
+                            else
                             {
                                 printf("NOPE\n");
-                                messageErrorCar();
-                            }
-                            else if(error == 2)
-                            {
-                                messageBookingAlreadyExist();
                             }
                         }
                         else {
@@ -1091,7 +1059,7 @@ static void grabCarId(GtkWidget *widget, gpointer data){
     carRegistration = gtk_entry_get_text(GTK_ENTRY((char*)data));
     printf("\n%s", carRegistration);
 
-    if(strlen(carRegistration) != 9){
+    if(strlen(carRegistration) != 7){
         messageErrorCar();
     }
 
@@ -1120,17 +1088,17 @@ static void grabCarIdEntryParking(GtkWidget *widget, gpointer data){
             if(error == 0)
             {
                 printf("Booking start !\n");
-
-                messageEnterParking();
+                messageSuccessPayment();
             }
             else
             {
-                messageBookingNotCreated();
+                printf("NOPE\n");
             }
         }
         else {
             messageErrorConnection();
         }
+        messageEnterParking();
     }
 
 }
@@ -1159,7 +1127,8 @@ static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data){
             {
                 printf("Booking end !\n");
                 facture_check(mysql,carRegistration);
-                messageLeavingParking();
+                printf("PAIMEMEMEMEMEME\n");
+                messageSuccessPayment();
             }
             else
             {
@@ -1170,6 +1139,7 @@ static void grabCarIdLeavingParking(GtkWidget *widget, gpointer data){
         else {
             messageErrorConnection();
         }
+        messageLeavingParking();
     }
 
 }
@@ -1184,15 +1154,15 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
 
 
     /** IF OK **/
-    if(strlen(carRegistration) == 9){
+    if(strlen(carRegistration) == 7){
         GtkWidget *window;
         GtkWidget *vBox;
         GtkWidget *subvBox;
         GtkWidget *frame;
         GtkWidget *text;
         GtkWidget *textArray;
-        GtkWidget *buttonUndo;
-        GtkWidget *buttonCancel;
+
+        GtkWidget *button;
 
         window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
         gtk_window_set_title(GTK_WINDOW(window), "PARK'CAR");
@@ -1218,13 +1188,9 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
 
 
         /** FIN DES RECUPERATION DES DONNEES VIA BDD **/
-        buttonUndo = gtk_button_new_from_stock(GTK_STOCK_UNDO);
-        buttonCancel = gtk_button_new_with_label("Cancel my reservation");
-        gtk_table_attach(GTK_TABLE(textArray), buttonUndo, 4, 5, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
-        gtk_table_attach(GTK_TABLE(textArray), buttonCancel, 5, 6, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
+        button = gtk_button_new_with_label("Cancel my reservation");
+        gtk_table_attach(GTK_TABLE(textArray), button, 5, 6, 5, 6, !GTK_EXPAND | !GTK_FILL, !GTK_EXPAND, 0, 10);
         //g_signal_connect(button, "clicked", G_CALLBACK(bookCancelled), NULL);
-        g_signal_connect(buttonUndo, "clicked", G_CALLBACK(destroySubWindow), window);
-
 
         gtk_widget_show_all(window);
         gtk_main();
@@ -1236,6 +1202,4 @@ static void grabEntryData(GtkWidget *widget, gpointer data){
     }
 
 }
-static void destroySubWindow(GtkWidget *widget, gpointer data){
-    gtk_widget_destroy(data);
-}
+

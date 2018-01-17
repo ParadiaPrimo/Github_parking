@@ -1,0 +1,26 @@
+Bill ID : 7
+Car numberplate : AZ AAA ER
+
+		========================================
+		======		Park'Car	  ======
+		========================================
+
+Customer name : Caroline  Tang
+Bank account : XXXX-XXXX-XXXX-1221
+
+
+Booking detail :
+	From : 2018-01-01 08:00:00			to : 2018-01-01 10:00:00
+
+Realtime booking :
+	From : 2018-01-16 19:44:42			to : 2018-01-16 19:46:57
+
+Cleaning : 25€
+
+Fuel : 0,00€
+
+Parking : 2,00€
+
+Penality : 20€
+
+Total : 47,00€

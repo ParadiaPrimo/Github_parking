@@ -4,7 +4,7 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
 int activate_booking(MYSQL *mysql,char *car_id);
 int end_booking(MYSQL *mysql,char *car_id);
 int client_subscribe(MYSQL *mysql,char* car_id,int sub);
-Info_booking get_info(MYSQL* mysql,char * car_id);
+int client_add_car(MYSQL *mysql,char* car_id,char* mail);
 
 typedef struct cb_user
 {
@@ -26,9 +26,11 @@ typedef struct Info_booking
     char id_reserv[2];
     char start_reserv[20];
     char end_reserv[20];
+    int use;
 
 } Info_booking;
 
+Info_booking get_info(MYSQL* mysql,char * car_id);
 
 int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
 {
@@ -36,7 +38,7 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
     MYSQL_ROW row;
 
     char request[150];
-
+    printf("\nNOM: %s", nom);
 	sprintf(request,"SELECT * FROM proprietaire");
 	mysql_query(mysql,request);
 	result = mysql_use_result(mysql);
@@ -48,8 +50,7 @@ int client_sign_in(MYSQL* mysql,char *nom,char *prenom,char *mdp,char *mail)
                 return 99;
             }
     }
-
-    sprintf(request,"INSERT INTO `proprietaire`(`nom`, `prenom`, `password`, `mail`) VALUES ('%s','%s','%s','%s')",nom,prenom,mdp,mail);
+    sprintf(request,"INSERT INTO `proprietaire`(`nom`, `prenom`, `password`, `mail`) VALUES ('%s','%s','%s','%s')",nom,prenom,mail,mdp);
 	mysql_query(mysql,request);
 
 	sprintf(request,"SELECT * FROM proprietaire");
@@ -75,7 +76,7 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
     printf("tempo : %s",tempo);
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;
-    int flag = 0;
+    int plop = 0;
     char request[150];
     cb_user user_info;
     printf("number : %s\n",account_number);
@@ -84,23 +85,26 @@ int client_cb_register(MYSQL *mysql,char* account_number,char *crypto,char* expi
 	printf("expi year : %c%c%c%c\n",expiration[2],expiration[3],expiration[4],expiration[5]);
 	printf("mail : %s\n",mail);
 
+               printf("1\n");
 	sprintf(request,"SELECT * FROM proprietaire");
 	mysql_query(mysql,request);
 	result = mysql_use_result(mysql);
+               printf("2\n");
+
     while ((row = mysql_fetch_row(result)))
-    {
-        if(strcmp(row[4],mail) == 0)
-            {
+    {printf("row   %s  \n",row[4]);
+        if(strcmp(mail,row[4]) == 0)
+        {
                 user_info.id_proprio = atoi(row[0]);
-                flag = 1;
+                plop = 1;
                 break;
-            }
-    }
-    if(flag==0);
+         }
+    }/*
+    if(plop==0);
     {
         printf("ERROR : the account doesn't exist\n");
         return 99;
-    }
+    }*/
         sprintf(user_info.expi,"%c%c%c%c-%c%c-01",expiration[2],expiration[3],expiration[4],expiration[5],expiration[0],expiration[1]);
         sprintf(user_info.char_month_expi,"%c%c",expiration[0],expiration[1]);
         sprintf(user_info.char_year_expi,"%c%c%c%c",expiration[2],expiration[3],expiration[4],expiration[5]);
@@ -195,11 +199,21 @@ int client_booking_creation(MYSQL*mysql,int start_day,int start_month,int start_
 
 
     sprintf(request,"INSERT INTO `reservation`(`id_voiture`, `date_prevue_start`, `date_prevue_end`, `date_true_start`, `date_true_end`, `lavage_int`, `lavage_ext`, `lavage_total`, `essence`) VALUES (%s,'%s','%s',NULL,NULL,%d,%d,%d,%d)",id_voiture,date_start,date_end,cleaning_in,cleaning_out,cleaning_both,fuel);
+	printf("%s\n",request);
 	mysql_query(mysql,request);
 
-
+    sprintf(request,"SELECT * FROM reservation");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[2],date_start) == 0)
+            {
     mysql_free_result(result);
-
+                return 0;
+            }
+    }
+    return 99;
 }
 
 int activate_booking(MYSQL *mysql,char *car_id)
@@ -381,6 +395,7 @@ int client_subscribe(MYSQL *mysql,char* car_id,int sub)
 Info_booking get_info(MYSQL* mysql,char * car_id)
 {
     Info_booking user_info;
+    user_info.use = 0;
 
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;
@@ -435,16 +450,17 @@ Info_booking get_info(MYSQL* mysql,char * car_id)
 
     if(flag==2)
     {
+    user_info.use = 1;
      return user_info;
     }
     else
     {
-        return NULL;
+        return user_info;
     }
 }
 
 
-int cancel_booking(MYSQL *mysql,Info_booking *user_info)
+int cancel_booking(MYSQL *mysql,Info_booking user_info)
 {
     MYSQL_RES *result = NULL;
     MYSQL_ROW row;
@@ -457,7 +473,7 @@ int cancel_booking(MYSQL *mysql,Info_booking *user_info)
 	result = mysql_use_result(mysql);
     while ((row = mysql_fetch_row(result)))
     {
-        if(strcmp(row[0],user_info.id_reserv) == 0)
+        if(strcmp(row[0],user_info.id_reserv[0]) == 0)
             {
                 if(strcpy(row[10],"1")|| strcpy(row[11],"1"))
                 {
@@ -475,5 +491,63 @@ int cancel_booking(MYSQL *mysql,Info_booking *user_info)
     return 99;
 }
 
+int client_add_car(MYSQL *mysql,char* car_id,char *mail)
+{
+    MYSQL_RES *result = NULL;
+    MYSQL_ROW row;
+
+    int flag=0;
+    char id_proprio[2];
+    char request[1000];
+printf("1\n");
+    sprintf(request,"SELECT * FROM proprietaire");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[4],mail) == 0)
+            {
+                strcpy(id_proprio,row[0]);
+                break;
+            }
+    }
+    mysql_free_result(result);
+printf("2\n");
+
+    sprintf(request,"SELECT * FROM voiture");
+	mysql_query(mysql,request);
+	printf("soejojsdf\n");
+	result = mysql_use_result(mysql);
+	printf("zepjf\n");
+    while ((row = mysql_fetch_row(result)))
+    {printf("OKZOKZ\n");
+        if(strcmp(row[2],car_id) == 0)
+            {
+                printf("ooooooooo\n");
+                return 99;
+            }
+    }
+
+    mysql_free_result(result);
+printf("3\n");
+    sprintf(request,"INSERT INTO `voiture`(`id_proprio`, `plaque_immatriculation`) VALUES (%s,'%s')",id_proprio,car_id);
+	mysql_query(mysql,request);
+printf("4\n");
+
+    sprintf(request,"SELECT * FROM voiture");
+	mysql_query(mysql,request);
+	result = mysql_use_result(mysql);
+    while ((row = mysql_fetch_row(result)))
+    {
+        if(strcmp(row[2],car_id) == 0)
+            {
+                return 0;
+            }
+    }
+
+    mysql_free_result(result);
+printf("5\n");
+    return 99;
+}
 
 
